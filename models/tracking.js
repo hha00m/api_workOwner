@@ -8,19 +8,19 @@ const trackingSchema = new mongoose.Schema(
       ref: 'Order',
       required: true,
     },
-    current_location:{
+    currentLocation:{
       type: ObjectId,
       ref: 'Address',
       required: true,
     },
-    new_address:{
+    newAddress:{
        type: ObjectId,
       ref: 'Address',
       required: true,
   },
-    order_status:{
+    orderStatus:{
       type: ObjectId,
-      ref: 'Order_Status',
+      ref: 'OrderStatus',
       required: true,
 
     },

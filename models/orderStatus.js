@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const citySchema = new mongoose.Schema(
+const orderStatusSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -18,4 +18,4 @@ const citySchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("City", citySchema);
+module.exports = mongoose.model("OrderStatus", orderStatusSchema);

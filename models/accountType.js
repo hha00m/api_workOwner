@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const orderStatusSchema = new mongoose.Schema(
+const accountTypeSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -18,4 +18,4 @@ const orderStatusSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("Order_Status", orderStatusSchema);
+module.exports = mongoose.model("AccountType", accountTypeSchema);

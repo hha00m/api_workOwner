@@ -12,6 +12,7 @@ const messageSchema = new mongoose.Schema(
     order: { type: ObjectId, ref: 'Order', required: true },
     staff: { type: ObjectId, ref: 'Staff', required: true },
     client: { type: ObjectId, ref: 'Client', required: true },
+    isClient:{type:Boolean}
   },
   { timestamps: true },
 );

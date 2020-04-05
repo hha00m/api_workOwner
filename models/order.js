@@ -56,7 +56,10 @@ const shipmentSchema = new mongoose.Schema(
       ref: 'Address',
       required: true,
     },
-    deliveryPrice: {},
+    deliveryPrice: {
+      type:Number,
+      require:ture
+    },
     fromBranch: {
       type: ObjectId,
       ref: 'Branch',
@@ -73,7 +76,11 @@ const shipmentSchema = new mongoose.Schema(
       maxlength: 11,
       minlength: 11,
     },
-    customerName: {},
+    customerName: {
+      type: String,
+      trim: true,
+      maxlength: 200
+    },
     withDelivery: {
       type: Boolean,
       default: true,

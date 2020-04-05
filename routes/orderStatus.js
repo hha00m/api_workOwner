@@ -8,7 +8,7 @@ const {
     update,
     remove,
     list
-} = require("../controllers/order_status");
+} = require("../controllers/orderStatus");
 const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
 

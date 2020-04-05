@@ -48,7 +48,7 @@ const staffSchema = new mongoose.Schema(
       required: true,
     },
 
-    account_type: {
+    accountType: {
       type: ObjectId,
       ref: 'AccountType',
       required: true,
@@ -56,6 +56,7 @@ const staffSchema = new mongoose.Schema(
     enabled: {
       type: Boolean,
       required: true,
+      default:true
     },
     photo: {
       data: Buffer,
@@ -72,5 +73,31 @@ const staffSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+// virtual field
+staffSchema
+  .virtual('password')
+  .set(function (password) {
+    this._password = password;
+    this.salt = uuidv1();
+    this.hashed_password = this.encryptPassword(password);
+  })
+  .get(function () {
+    return this._password;
+  });
+
+  staffSchema.methods = {
+  authenticate: function (plainText) {
+    return this.encryptPassword(plainText) === this.hashed_password;
+  },
+
+  encryptPassword: function (password) {
+    if (!password) return '';
+    try {
+      return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
+    } catch (err) {
+      return '';
+    }
+  },
+};
 
 module.exports = mongoose.model('Staff', staffSchema);
