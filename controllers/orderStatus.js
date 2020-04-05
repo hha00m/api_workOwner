@@ -1,4 +1,4 @@
-const Order_status = require("../models/order_status");
+const Order_status = require("../models/orderStatus");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 
 exports.orderStatusById = (req, res, next, id) => {
