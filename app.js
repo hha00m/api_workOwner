@@ -13,7 +13,8 @@ const categoryRoutes = require("./routes/category");
 const cityRoutes = require("./routes/city");
 const clientRoutes = require("./routes/client");
 const productRoutes = require("./routes/product");
- const branchRoutes = require("./routes/branch");
+const branchRoutes = require("./routes/branch");
+// const orderStatusRoutes = require("./routes/order_status");
 
 // app
 const app = express();
@@ -41,7 +42,8 @@ app.use("/api", categoryRoutes);
 app.use("/api", cityRoutes);
 app.use("/api", clientRoutes);
 app.use("/api", productRoutes);
- app.use("/api", branchRoutes);
+app.use("/api", branchRoutes);
+// app.use("/api", orderStatusRoutes);
 
 const port = process.env.PORT || 8050;
 
