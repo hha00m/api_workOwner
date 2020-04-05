@@ -13,7 +13,7 @@ const clientSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      maxlength: 2000,
+      maxlength: 200,
     },
     mobile: {
       type: String,
@@ -23,9 +23,9 @@ const clientSchema = new mongoose.Schema(
       maxlength: 11,
       minlength: 11,
     },
-    city: {
+    branch: {
       type: ObjectId,
-      ref: 'City',
+      ref: 'Branch',
       required: true,
     },
     photo: {

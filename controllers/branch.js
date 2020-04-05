@@ -1,24 +1,24 @@
 const formidable = require("formidable");
 const _ = require("lodash");
 const fs = require("fs");
-const Client = require("../models/client");
+const Branch = require("../models/branch");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 
-exports.clientById = (req, res, next, id) => {
-    Client.findById(id).exec((err, client) => {
-        if (err || !client) {
+exports.branchById = (req, res, next, id) => {
+  Branch.findById(id).exec((err, branch) => {
+        if (err || !branch) {
             return res.status(400).json({
-                error: "client not found"
+                error: "Branch not found"
             });
         }
-        req.client = client;
+        req.branch = branch;
         next();
     });
 };
 
 exports.read = (req, res) => {
-    req.client.photo = undefined;
-    return res.json(req.client);
+    req.branch.photo = undefined;
+    return res.json(req.branch);
 };
 
 exports.create = (req, res) => {
@@ -33,26 +33,24 @@ exports.create = (req, res) => {
         // check for all fields
         const {
             name,
+            city,
             mobile,
-            branch,
-            password,
         } = fields;
 
         if (
             !name ||
-            !mobile ||
-            !branch ||
-            !password
+            !city ||
+            !mobile
         ) {
             return res.status(400).json({
                 error: "All fields are required"
             });
         }
 
-        let client = new Client(fields);
+        let branch = new Branch(fields);
 
         // 1kb = 1000
-         // 1mb = 1000000
+        // 1mb = 1000000
 
         if (files.photo) {
             // console.log("FILES PHOTO: ", files.photo);
@@ -61,11 +59,11 @@ exports.create = (req, res) => {
                     error: "Image should be less than 1mb in size"
                 });
             }
-            client.photo.data = fs.readFileSync(files.photo.path);
-            client.photo.contentType = files.photo.type;
+            branch.photo.data = fs.readFileSync(files.photo.path);
+            branch.photo.contentType = files.photo.type;
         }
 
-        client.save((err, result) => {
+        branch.save((err, result) => {
             if (err) {
                 return res.status(400).json({
                     error: errorHandler(err)
@@ -77,15 +75,15 @@ exports.create = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-    let client = req.client;
-    client.remove((err, deletedClient) => {
+    let branch = req.branch;
+    branch.remove((err, deletedbranch) => {
         if (err) {
             return res.status(400).json({
                 error: errorHandler(err)
             });
         }
         res.json({
-            message: "client deleted successfully"
+            message: "branch deleted successfully"
         });
     });
 };
@@ -102,24 +100,22 @@ exports.update = (req, res) => {
         // check for all fields
         const {
             name,
-            branch,
             mobile,
-            password
+            city,
         } = fields;
 
         if (
             !name ||
-            !branch ||
             !mobile ||
-            !password
-        ) {
+            !city
+            ) {
             return res.status(400).json({
                 error: "All fields are required"
             });
         }
 
-        let client = req.client;
-        client = _.extend(client, fields);
+        let branch = req.branch;
+        branch = _.extend(branch, fields);
 
         // 1kb = 1000
         // 1mb = 1000000
@@ -131,11 +127,11 @@ exports.update = (req, res) => {
                     error: "Image should be less than 1mb in size"
                 });
             }
-            client.photo.data = fs.readFileSync(files.photo.path);
-            client.photo.contentType = files.photo.type;
+            branch.photo.data = fs.readFileSync(files.photo.path);
+            branch.photo.contentType = files.photo.type;
         }
 
-        client.save((err, result) => {
+        branch.save((err, result) => {
             if (err) {
                 return res.status(400).json({
                     error: errorHandler(err)
@@ -146,32 +142,22 @@ exports.update = (req, res) => {
     });
 };
 
-/**
- * sell / arrival
- * by sell = /clients?sortBy=sold&order=desc&limit=4
- * by arrival = /clients?sortBy=createdAt&order=desc&limit=4
- * if no params are sent, then all clients are returned
- */
-
-exports.list = (req, res) => {
-    // let order = req.query.order ? req.query.order : "asc";
-    // let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
-    // let limit = req.query.limit ? parseInt(req.query.limit) : 6;
-
-    Client.find().exec((err, clients) => {
-            if (err) {
-                return res.status(400).json({
-                    error: "client not found"
-                });
-            }
-            res.json(clients);
-        });
-};
-
 exports.photo = (req, res, next) => {
-  if (req.client.photo.data) {
-      res.set("Content-Type", req.client.photo.contentType);
-      return res.send(req.client.photo.data);
+  if (req.branch.photo.data) {
+      res.set("Content-Type", req.branch.photo.contentType);
+      return res.send(req.branch.photo.data);
   }
   next();
+};
+
+exports.list = (req, res) => {
+  Product.find()
+      .exec((err, branches) => {
+          if (err) {
+              return res.status(400).json({
+                  error: "branches not found"
+              });
+          }
+          res.json(branches);
+      });
 };

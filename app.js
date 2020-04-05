@@ -13,6 +13,7 @@ const categoryRoutes = require("./routes/category");
 const cityRoutes = require("./routes/city");
 const clientRoutes = require("./routes/client");
 const productRoutes = require("./routes/product");
+ const branchRoutes = require("./routes/branch");
 
 // app
 const app = express();
@@ -40,9 +41,11 @@ app.use("/api", categoryRoutes);
 app.use("/api", cityRoutes);
 app.use("/api", clientRoutes);
 app.use("/api", productRoutes);
+ app.use("/api", branchRoutes);
 
 const port = process.env.PORT || 8050;
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
