@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema;
 
-const shipmentSchema = new mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
     order_no: {
       type: Number,
@@ -58,7 +58,7 @@ const shipmentSchema = new mongoose.Schema(
     },
     deliveryPrice: {
       type:Number,
-      require:ture
+      required: true,
     },
     fromBranch: {
       type: ObjectId,
@@ -129,4 +129,4 @@ const shipmentSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-module.exports = mongoose.model('Shipment', shipmentSchema);
+module.exports = mongoose.model('Order', orderSchema);

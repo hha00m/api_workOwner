@@ -61,8 +61,8 @@ exports.update = (req, res) => {
 
 // List of prices for certain client
 exports.list = (req, res) => {
-
-  Store.find({client: req.store.client}).exec((err, store) => {
+//{client: req.store.client}
+  Store.find().exec((err, store) => {
             if (err) {
                 return res.status(400).json({
                     error: "store not found"

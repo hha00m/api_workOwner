@@ -18,6 +18,16 @@ const orderStatusRoutes = require('./routes/orderStatus');
 const townRoutes = require('./routes/town');
 const storeRoutes = require('./routes/store');
 const clientDeliveryPriceRoutes = require('./routes/clientDeliveryPrice');
+const addressRoutes = require('./routes/address');
+const staffRoutes = require('./routes/staff');
+const roleRoutes = require('./routes/role');
+const messageRoutes = require('./routes/messages');
+const invoRoutes = require('./routes/invoice');
+const receiptRoutes = require('./routes/receipt');
+const trackingRoutes = require('./routes/tracking');
+const orderTypeRoutes = require('./routes/orderType');
+const orderRoutes = require('./routes/order');
+
 
 // app
 const app = express();
@@ -50,6 +60,16 @@ app.use('/api', orderStatusRoutes);
 app.use('/api', townRoutes);
 app.use('/api', storeRoutes);
 app.use('/api', clientDeliveryPriceRoutes);
+app.use('/api',addressRoutes);
+app.use('/api',townRoutes);
+app.use('/api', staffRoutes);
+app.use('/api', roleRoutes);
+app.use('/api', messageRoutes);
+app.use('/api', invoRoutes);
+app.use('/api', receiptRoutes);
+app.use('/api', trackingRoutes);
+app.use('/api', orderTypeRoutes);
+app.use('/api', orderRoutes);
 
 const port = process.env.PORT || 8050;
 

@@ -60,7 +60,7 @@ exports.remove = (req, res) => {
 };
 
 exports.list = (req, res) => {
-  Tracking.find({order:req.tracking.order})
+  Tracking.find()//{order:req.tracking.order}
       .exec((err, trackings) => {
           if (err) {
               return res.status(400).json({

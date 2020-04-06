@@ -1,10 +1,10 @@
 const formidable = require("formidable");
 const _ = require("lodash");
-const Role = require("../models/Role");
+const Role = require("../models/role");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 
-exports.staffById = (req, res, next, id) => {
-  role.findById(id).exec((err, role) => {
+exports.roleById = (req, res, next, id) => {
+  Role.findById(id).exec((err, role) => {
         if (err || !role) {
             return res.status(400).json({
                 error: "role not found"

@@ -1,7 +1,5 @@
-//-----------------Imports Lib-------------
 const express = require("express");
 const router = express.Router();
-//-----------------Imports-----------------
 const {create,roleById,read,remove,update,list} = require("../controllers/role");
 const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");

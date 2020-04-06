@@ -23,7 +23,7 @@ exports.read = (req, res) => {
 
 exports.create = (req, res) => {
   const town = new Town(req.body);
-  city.save((err, data) => {
+  town.save((err, data) => {
       if (err) {
           return res.status(400).json({
               error: errorHandler(err)

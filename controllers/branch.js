@@ -151,7 +151,7 @@ exports.photo = (req, res, next) => {
 };
 
 exports.list = (req, res) => {
-  Product.find()
+  Branch.find()
       .exec((err, branches) => {
           if (err) {
               return res.status(400).json({

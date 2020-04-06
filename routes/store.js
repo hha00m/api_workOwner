@@ -12,7 +12,7 @@ router.get("/store/:storeID", read);
 router.put("/store/:storeID/:userId",requireSignin,isAuth,isAdmin,update);
 router.delete("/store/:storeID/:userId",requireSignin,isAuth,isAdmin,remove);
 //-------------list------------------------
-router.get("/stores/:storeID", list);
+router.get("/stores/", list);
 //-------------params----------------------
 router.param("userId", userById);
 router.param("clientId", clientById);
