@@ -10,7 +10,7 @@ exports.storeById = (req, res, next, id) => {
                 error: "Store not found"
             });
         }
-        req.town = store;
+        req.store = store;
         next();
     });
 };
