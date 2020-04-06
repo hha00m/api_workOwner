@@ -2,20 +2,18 @@
 const express = require("express");
 const router = express.Router();
 //-----------------Imports-----------------
-const {create,storeById,read,remove,update,list} = require("../controllers/store");
+const {create,orderTypeById,read,remove,update,list} = require("../controllers/orderType");
 const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
-const {clientById} =require("../controllers/client");
 //-------------CRUD------------------------
-router.post("/store/create/:userId", requireSignin, isAuth, isAdmin, create);
-router.get("/store/:storeID", read);
-router.put("/store/:storeID/:userId",requireSignin,isAuth,isAdmin,update);
-router.delete("/store/:storeID/:userId",requireSignin,isAuth,isAdmin,remove);
+router.post("/orderType/create/:userId", requireSignin, isAuth, isAdmin, create);
+router.get("/orderType/:orderTypeId", read);
+router.put("/orderType/:orderTypeId/:userId",requireSignin,isAuth,isAdmin,update);
+router.delete("/orderType/:orderTypeId/:userId",requireSignin,isAuth,isAdmin,remove);
 //-------------list------------------------
-router.get("/stores/:storeID", list);
+router.get("/orderTypes/", list);
 //-------------params----------------------
 router.param("userId", userById);
-router.param("clientId", clientById);
-router.param("storeID", storeById);
+router.param("orderTypeId", orderTypeById);
 //---------------Export the module---------
 module.exports = router;
