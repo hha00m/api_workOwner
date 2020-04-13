@@ -16,7 +16,7 @@ const townSchema = new mongoose.Schema(
     },
     center: {
       type: Boolean,
-      required: true,
+      default: false,
     },
      note: {
       type: String,

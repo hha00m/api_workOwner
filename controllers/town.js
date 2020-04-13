@@ -21,15 +21,45 @@ exports.read = (req, res) => {
     return res.json(req.town);
 };
 
+
 exports.create = (req, res) => {
-  const town = new Town(req.body);
-  town.save((err, data) => {
+  let form = new formidable.IncomingForm();
+  form.keepExtensions = true;
+  // console.log(req);
+  form.parse(req, (err, fields, files) => {
       if (err) {
           return res.status(400).json({
-              error: errorHandler(err)
+              error: "Image could not be uploaded"
           });
       }
-      res.json({ data });
+      // check for all fields
+      const {
+          name,
+          city,
+          center,
+      } = fields;
+console.log(name, city);
+      if (
+          !name ||
+          !city
+                ) {
+          return res.status(400).json({
+              error: "All fields are required"
+          });
+      }
+
+      let town = new Town(fields);
+
+
+
+      town.save((err, result) => {
+          if (err) {
+              return res.status(400).json({
+                  error: errorHandler(err)
+              });
+          }
+          res.json(result);
+      });
   });
 };
 

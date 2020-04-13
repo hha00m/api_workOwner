@@ -35,21 +35,17 @@ const orderSchema = new mongoose.Schema(
     driver: {
       type: ObjectId,
       ref: 'Staff',
-      required: true,
     },
     manager: {
       type: ObjectId,
       ref: 'Staff',
-      required: true,
     },
     moneyStatus: {
       type: ObjectId,
       ref: 'MoneyStatus',
-      required: true,
     },
     isAgreed: {
       type: Boolean,
-      default: true,
     },
     toAddress: {
       type: ObjectId,
@@ -63,12 +59,11 @@ const orderSchema = new mongoose.Schema(
     fromBranch: {
       type: ObjectId,
       ref: 'Branch',
-      required: true,
     },
     toBranch: {
       type: ObjectId,
       ref: 'Branch',
-      required: true,
+      required:true
     },
     customerMobile: {
       type: Number,
@@ -100,12 +95,10 @@ const orderSchema = new mongoose.Schema(
     orderStatus: {
       type: ObjectId,
       ref: 'OrderStatus',
-      required: true,
     },
     invoice: {
       type: ObjectId,
       ref: 'Invoice',
-      required: true,
     },
     store: {
       type: ObjectId,

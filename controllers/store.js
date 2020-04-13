@@ -20,17 +20,47 @@ exports.read = (req, res) => {
     return res.json(req.s);
 };
 
+
 exports.create = (req, res) => {
-  const store = new Store(req.body);
-  store.save((err, data) => {
+  let form = new formidable.IncomingForm();
+  form.keepExtensions = true;
+  form.parse(req, (err, fields, files) => {
       if (err) {
           return res.status(400).json({
-              error: errorHandler(err)
+              error: "Image could not be uploaded"
           });
       }
-      res.json({ data });
+      // check for all fields
+      const {
+          name,
+          client,
+
+      } = fields;
+
+      if (
+          !name ||
+          !client
+      ) {
+          return res.status(400).json({
+              error: "All fields are required"
+          });
+      }
+
+      let store = new Store(fields);
+
+
+
+      store.save((err, result) => {
+          if (err) {
+              return res.status(400).json({
+                  error: errorHandler(err)
+              });
+          }
+          res.json(result);
+      });
   });
 };
+
 
 
 exports.remove = (req, res) => {
