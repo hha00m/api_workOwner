@@ -93,13 +93,31 @@ exports.update = (req, res) => {
 
 exports.list = (req, res) => {
 
-  Town.find().exec((err, towns) => {
-            if (err) {
-                return res.status(400).json({
-                    error: "town not found"
-                });
-            }
-            res.json(towns);
-        });
-};
+  Town.aggregate([{
+    $lookup:
+        {
+            from: "cities",
+            localField: "city",
+            foreignField:"_id",
+            as:"cities"
+        }
+    }]).exec((err, towns) => {
+                if (err) {
+                    return res.status(400).json({
+                        error: "town not found"
+                    });
+                }
+                res.json(towns);
+            });
+
+    };
+  // Town.find().exec((err, towns) => {
+  //           if (err) {
+  //               return res.status(400).json({
+  //                   error: "town not found"
+  //               });
+  //           }
+  //           res.json(towns);
+  //       });
+
 
