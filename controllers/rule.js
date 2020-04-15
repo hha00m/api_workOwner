@@ -3,6 +3,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const Town = require('../models/town');
 const { errorHandler } = require('../helpers/dbErrorHandler');
+// const { TableListItem,TableListParams } =require ('./data');
 
 exports.townById = (req, res, next, id) => {
   Town.findById(id).exec((err, town) => {
@@ -87,31 +88,53 @@ exports.update = (req, res) => {
  * let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
  * let limit = req.query.limit ? parseInt(req.query.limit) : 6;
  */
+// mock tableListDataSource
+const genList = (current, pageSize) => {
+  const tableListDataSource = [];
 
-exports.list = (req, res) => {
+  for (let i = 0; i < pageSize; i += 1) {
+    const index = (current - 1) * 10 + i;
+    tableListDataSource.push({
+      key: index,
+      disabled: i % 6 === 0,
+      href: 'https://ant.design',
+      avatar: [
+        'https://gw.alipayobjects.com/zos/rmsportal/eeHMaZBwmTvLdIwMfBpg.png',
+        'https://gw.alipayobjects.com/zos/rmsportal/udxAbMEhpwthVVcjLXik.png',
+      ][i % 2],
+      name: `حلة ${index}`,
+      city: 'babil',
+      owner: '曲丽丽',
+      desc: '这是一段描述',
+      note: 'all good from hayder',
+      callNo: Math.floor(Math.random() * 1000),
+      status: Math.floor(Math.random() * 10) % 4,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      progress: Math.ceil(Math.random() * 100),
+    });
+  }
+  tableListDataSource.reverse();
+  return tableListDataSource;
+};
+
+exports.getRule = (req, res) => {
+
+  let  dataSource = genList(1, 10);
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let order = req.query.order ? req.query.order : 'asc'; //increase
   let sorter = req.query.sorter ? req.query.sorter : 'name'; // sort by name
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
 
-  Town.find()
-    .populate('city')
-    .sort([[sorter, order]])
-    .skip(current * pageSize)
-    .limit(pageSize)
-    .exec((err, towns) => {
-      if (err) {
-        return res.status(400).json({
-          error: 'towns not found',
-        });
-      }
-      res.json({
-        data:towns,
-        total:7,
-        success: true,
-        pageSize,
-        current,
-      });
-    });
+
+
+  const result = {
+    data: dataSource,
+    total: dataSource.length,
+    success: true,
+    pageSize,
+    current,
+  };
+  return res.json(result);
 };

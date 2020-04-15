@@ -27,6 +27,7 @@ const receiptRoutes = require('./routes/receipt');
 const trackingRoutes = require('./routes/tracking');
 const orderTypeRoutes = require('./routes/orderType');
 const orderRoutes = require('./routes/order');
+const ruleRoutes = require('./routes/rule');
 
 
 // app
@@ -47,8 +48,10 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(expressValidator());
 app.use(cors());
+app.disable('etag');
 
 // routes middleware
+app.use('/api', ruleRoutes);
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
