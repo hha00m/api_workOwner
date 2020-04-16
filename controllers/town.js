@@ -24,7 +24,6 @@ exports.read = (req, res) => {
 exports.create = (req, res) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
-  // console.log(req);
   form.parse(req, (err, fields, files) => {
     if (err) {
       return res.status(400).json({
@@ -33,7 +32,6 @@ exports.create = (req, res) => {
     }
     // check for all fields
     const { name, city, center } = fields;
-    console.log(name, city);
     if (!name || !city) {
       return res.status(400).json({
         error: 'All fields are required',
@@ -89,14 +87,46 @@ exports.update = (req, res) => {
  */
 
 exports.list = (req, res) => {
+  //---------------------sort live--------------------------
+  let sort = req.query.sorter;
+  let str = sort.split('_');
+  let sorter = str[0] ? str[0] : '_id';
+  let order = str[1] == 'ascend' ? 1 : -1;
+  //-----------------------find Item---------------------------
+  var fName = req.query.name ? req.query.name : '',
+    fCity = req.query.city ? req.query.city : '';
+  fCenter = req.query.center ? req.query.center : '';
+
+  //------------------------------------------------------
+  var query = {};
+  if (fName != '' || fCenter != '') query = { $and: [] };
+  if (fName !== '') {
+    query.$and.push({ name: { $regex: '.*' + fName + '.*' } });
+  }
+  if (fCenter !== '') {
+    query.$and.push({ center: { $regex: '.*' + fName + '.*' } });
+  }
+ if (fCenter !== '') {
+   query.$and.push({ center: fCenter });
+ }
+
+  //------------------------------------------------------
+  // var queryCity = {};
+  // if (fCity != '') queryCity = { match: [] };
+
+  // if (fCity !== '') {
+  //   queryCity.$and.push({ name: { $regex: '.*' + fCity + '.*' } });
+  // }
+
+  //--------------------------------------------------
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
-  let order = req.query.order ? req.query.order : 'asc'; //increase
-  let sorter = req.query.sorter ? req.query.sorter : 'name'; // sort by name
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
-
-  Town.find()
-    .populate('city')
+  Town.find(query)
+    .populate({
+      path: 'city',
+      match:{ name: { $regex: '.*' + fCity + '.*' }},
+    })
     .sort([[sorter, order]])
     .skip(current * pageSize)
     .limit(pageSize)
@@ -107,8 +137,8 @@ exports.list = (req, res) => {
         });
       }
       res.json({
-        data:towns,
-        total:7,
+        data: towns,
+        total: 7,
         success: true,
         pageSize,
         current,
