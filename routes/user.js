@@ -13,7 +13,7 @@ router.get("/secret/:userId", requireSignin, isAuth, isAdmin, (req, res) => {
 
 router.get("/user/:userId", requireSignin, isAuth, read);
 router.put("/user/:userId", requireSignin, isAuth, update);
- router.put("/currentUser", currentUser);
+ router.get("/currentUser", currentUser);
 
 router.param("userId", userById);
 

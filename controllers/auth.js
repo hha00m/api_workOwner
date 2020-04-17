@@ -43,8 +43,8 @@ exports.signin = (req, res) => {
     res.cookie('t', token, { expire: new Date() + 9999 });
     // return response with user and token to frontend client
     //const { _id, name, email, mobile, role,userName } = user;
-       const { _id } = user;
- return res.json({
+    const { _id } = user;
+    return res.json({
       status: 'ok',
       type,
       _id,
@@ -56,7 +56,7 @@ exports.signin = (req, res) => {
 exports.signinusername = (req, res) => {
   return res.json({
     status: 'ok',
-    type:'account',
+    type: 'account',
     currentAuthority: 'admin',
   });
   // find the user based on email
@@ -70,7 +70,7 @@ exports.signinusername = (req, res) => {
     }
     // create authenticate method in user model
     if (!user.authenticate(password)) {
-      console.log("not exsit");
+      console.log('not exsit');
 
       return res.status(401).json({
         error: 'username and password dont match',
@@ -86,17 +86,15 @@ exports.signinusername = (req, res) => {
     //   status: 'ok',
     //       token,
     // _id,
-//  type,
+    //  type,
     //   currentAuthority: 'admin',
     // });
   });
 };
 
-
-
 exports.signinMobile = (req, res) => {
   // find the user based on mobile number
-  const { mobile, password,type } = req.body;
+  const { mobile, password, type } = req.body;
   User.findOne({ mobile }, (err, user) => {
     if (err || !user) {
       return res.status(400).json({
@@ -115,13 +113,13 @@ exports.signinMobile = (req, res) => {
     // persist the token as 't' in cookie with expiry date
     res.cookie('t', token, { expire: new Date() + 9999 });
     // return response with user and token to frontend client
-    const {_id}=user;
+    const { _id } = user;
     return res.json({
       status: 'ok',
-        type,
-        token,
-        _id,
-        currentAuthority: 'admin',
+      type,
+      token,
+      _id,
+      currentAuthority: 'admin',
     });
   });
 };
@@ -154,3 +152,4 @@ exports.isAdmin = (req, res, next) => {
   }
   next();
 };
+

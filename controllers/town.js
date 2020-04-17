@@ -89,7 +89,11 @@ exports.update = (req, res) => {
 exports.list = (req, res) => {
   //---------------------sort live--------------------------
   let sort = req.query.sorter;
+  try{
   let str = sort.split('_');
+  }catch(e){
+   console.log(e);
+  }
   let sorter = str[0] ? str[0] : '_id';
   let order = str[1] == 'ascend' ? 1 : -1;
   //-----------------------find Item---------------------------
@@ -121,7 +125,7 @@ exports.list = (req, res) => {
   //--------------------------------------------------
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-
+  const total=Town.find(query).count;
   Town.find(query)
     .populate({
       path: 'city',
@@ -136,9 +140,10 @@ exports.list = (req, res) => {
           error: 'towns not found',
         });
       }
+
       res.json({
         data: towns,
-        total: 7,
+        total,
         success: true,
         pageSize,
         current,

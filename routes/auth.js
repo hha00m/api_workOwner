@@ -7,14 +7,15 @@ const {
     signinMobile,
     signinusername,
     signout,
-    requireSignin
+    requireSignin,
+    currnetUser
 } = require("../controllers/auth");
 const { userSignupValidator } = require("../validator");
 
 router.post("/register", userSignupValidator, signup);
 router.post("/signin", signin);
 router.post("/signinmobile", signinMobile);
-router.post("/signinusername", signinusername);
+router.post("/login/account", signinusername);
 router.get("/signout", signout);
 
 module.exports = router;
