@@ -11,6 +11,7 @@ exports.townById = (req, res, next, id) => {
         error: 'town not found',
       });
     }
+    console.log('town found ...');
     req.town = town;
     next();
   });
@@ -22,38 +23,22 @@ exports.read = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  let form = new formidable.IncomingForm();
-  form.keepExtensions = true;
-  form.parse(req, (err, fields, files) => {
+  //console.log("name is:",req.body.name," city is:", req.body.city,"    :",req.body.center,"     :",req.body.note)
+
+  const town = new Town(req.body);
+  town.save((err, data) => {
     if (err) {
       return res.status(400).json({
-        error: 'Image could not be uploaded',
+        error: errorHandler(err),
       });
     }
-    // check for all fields
-    const { name, city, center } = fields;
-    if (!name || !city) {
-      return res.status(400).json({
-        error: 'All fields are required',
-      });
-    }
-
-    let town = new Town(fields);
-
-    town.save((err, result) => {
-      if (err) {
-        return res.status(400).json({
-          error: errorHandler(err),
-        });
-      }
-      res.json(result);
-    });
+    res.json({ data });
   });
 };
-
 exports.remove = (req, res) => {
+  console.log('--------------');
   let town = req.town;
-  town.remove((err, deletedTown) => {
+  town.remove((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -65,8 +50,21 @@ exports.remove = (req, res) => {
   });
 };
 exports.update = (req, res) => {
+  console.log(
+    'name is:',
+    req.body.name,
+    ' city is:',
+    req.body.city,
+    '    :',
+    req.body.center,
+    '     :',
+    req.body.note,
+  );
   const town = req.town;
   town.name = req.body.name;
+  town.center = req.body.center;
+  town.note = req.body.note;
+  town.city = req.body.city;
   town.save((err, data) => {
     if (err) {
       return res.status(400).json({
@@ -89,13 +87,17 @@ exports.update = (req, res) => {
 exports.list = (req, res) => {
   //---------------------sort live--------------------------
   let sort = req.query.sorter;
-  try{
-  let str = sort.split('_');
-  }catch(e){
-   console.log(e);
+  let str;
+
+  let sorter = '_id';
+  let order = 1;
+  try {
+    let str = sort.split('_');
+    sorter = str[0] ? str[0] : '_id';
+    order = str[1] == 'ascend' ? 1 : -1;
+  } catch (e) {
+    console.log(e);
   }
-  let sorter = str[0] ? str[0] : '_id';
-  let order = str[1] == 'ascend' ? 1 : -1;
   //-----------------------find Item---------------------------
   var fName = req.query.name ? req.query.name : '',
     fCity = req.query.city ? req.query.city : '';
@@ -110,9 +112,9 @@ exports.list = (req, res) => {
   if (fCenter !== '') {
     query.$and.push({ center: { $regex: '.*' + fName + '.*' } });
   }
- if (fCenter !== '') {
-   query.$and.push({ center: fCenter });
- }
+  if (fCenter !== '') {
+    query.$and.push({ center: fCenter });
+  }
 
   //------------------------------------------------------
   // var queryCity = {};
@@ -125,11 +127,11 @@ exports.list = (req, res) => {
   //--------------------------------------------------
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const total=Town.find(query).count;
+  const total = Town.find(query).count;
   Town.find(query)
     .populate({
       path: 'city',
-      match:{ name: { $regex: '.*' + fCity + '.*' }},
+      match: { name: { $regex: '.*' + fCity + '.*' } },
     })
     .sort([[sorter, order]])
     .skip(current * pageSize)

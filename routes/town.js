@@ -9,12 +9,12 @@ const { userById } = require('../controllers/user');
 // router.post("/town/create/:userId", requireSignin, isAuth, isAdmin, create);
 router.post('/town/create/', create);
 router.get('/town/:townID', read);
-router.put('/town/:townID/:userId', requireSignin, isAuth, isAdmin, update);
-router.delete('/town/:townID/:userId', requireSignin, isAuth, isAdmin, remove);
+router.put('/town/update/:townId',   update);
+router.delete('/town/:townId', remove);
 //-------------list------------------------
 router.get('/towns/', list);
 //-------------params----------------------
 router.param('userId', userById);
-router.param('townID', townById);
+router.param('townId', townById);
 //---------------Export the module---------
 module.exports = router;
