@@ -120,7 +120,7 @@ const genList = (current, pageSize) => {
 
 exports.getRule = (req, res) => {
 
-  let  dataSource = genList(1, 10);
+  let  dataSource = genList(1, 1000000);
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let order = req.query.order ? req.query.order : 'asc'; //increase
   let sorter = req.query.sorter ? req.query.sorter : 'name'; // sort by name

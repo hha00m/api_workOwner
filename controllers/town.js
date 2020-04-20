@@ -50,16 +50,6 @@ exports.remove = (req, res) => {
   });
 };
 exports.update = (req, res) => {
-  console.log(
-    'name is:',
-    req.body.name,
-    ' city is:',
-    req.body.city,
-    '    :',
-    req.body.center,
-    '     :',
-    req.body.note,
-  );
   const town = req.town;
   town.name = req.body.name;
   town.center = req.body.center;
@@ -88,7 +78,6 @@ exports.list = (req, res) => {
   //---------------------sort live--------------------------
   let sort = req.query.sorter;
   let str;
-
   let sorter = '_id';
   let order = 1;
   try {
@@ -105,26 +94,17 @@ exports.list = (req, res) => {
 
   //------------------------------------------------------
   var query = {};
-  if (fName != '' || fCenter != '') query = { $and: [] };
+  if (fName != '' || fCenter != '') query['$and'] = [];
   if (fName !== '') {
-    query.$and.push({ name: { $regex: '.*' + fName + '.*' } });
+    query['$and'].push({ name: { $regex: '.*' + fName + '.*' } });
   }
   if (fCenter !== '') {
-    query.$and.push({ center: { $regex: '.*' + fName + '.*' } });
+    query['$and'].push({ center: { $regex: '.*' + fName + '.*' } });
   }
   if (fCenter !== '') {
-    query.$and.push({ center: fCenter });
+    query['$and'].push({ center: fCenter });
   }
 
-  //------------------------------------------------------
-  // var queryCity = {};
-  // if (fCity != '') queryCity = { match: [] };
-
-  // if (fCity !== '') {
-  //   queryCity.$and.push({ name: { $regex: '.*' + fCity + '.*' } });
-  // }
-
-  //--------------------------------------------------
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
   const total = Town.find(query).count;

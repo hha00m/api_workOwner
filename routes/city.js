@@ -1,36 +1,19 @@
-const express = require("express");
+//-----------------Imports Lib-------------
+const express = require('express');
 const router = express.Router();
-
-const {
-    create,
-    cityById,
-    read,
-    update,
-    remove,
-    list
-} = require("../controllers/city");
-const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
-const { userById } = require("../controllers/user");
-
-router.get("/city/:cityId", read);
-router.post("/city/create/:userId", requireSignin, isAuth, isAdmin, create);
-router.put(
-    "/city/:cityId/:userId",
-    requireSignin,
-    isAuth,
-    isAdmin,
-    update
-);
-router.delete(
-    "/city/:cityId/:userId",
-    requireSignin,
-    isAuth,
-    isAdmin,
-    remove
-);
-router.get("/cities", list);
-
-router.param("cityId", cityById);
-router.param("userId", userById);
-
+//-----------------Imports-----------------
+const { create, cityById, read, remove, update, list } = require('../controllers/city');
+const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const { userById } = require('../controllers/user');
+//-------------CRUD------------------------
+ router.post('/city/create/', create);
+router.get('/city/:cityId', read);
+router.put('/city/update/:cityId',   update);
+router.delete('/city/:cityId', remove);
+//-------------list------------------------
+router.get('/cities/', list);
+ //-------------params----------------------
+router.param('userId', userById);
+router.param('cityId', cityById);
+//---------------Export the module---------
 module.exports = router;
