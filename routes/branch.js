@@ -1,40 +1,20 @@
-const express = require("express");
+//-----------------Imports Lib-------------
+const express = require('express');
 const router = express.Router();
-
-const {
-    create,
-    branchById,
-    read,
-    remove,
-    update,
-    list,
-    photo
-} = require("../controllers/branch");
-const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
-const { userById } = require("../controllers/user");
-
-router.get("/branch/:branchId", read);
-router.post("/branch/create/:userId", requireSignin, isAuth, isAdmin, create);
-router.delete(
-    "/branch/:branchId/:userId",
-    requireSignin,
-    isAuth,
-    isAdmin,
-    remove
-);
-router.put(
-    "/branch/:branchId/:userId",
-    requireSignin,
-    isAuth,
-    isAdmin,
-    update
-);
-
- router.get("/branches", list);
-router.get("/branch/photo/:branchId", photo);
-
-
-router.param("userId", userById);
-router.param("branchId", branchById);
-
+//-----------------Imports-----------------
+const { create, branchById, read, remove, update, list } = require('../controllers/branch');
+const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const { userById } = require('../controllers/user');
+//-------------CRUD------------------------
+// router.post("/branch/create/:userId", requireSignin, isAuth, isAdmin, create);
+router.post('/branch/create/', create);
+router.get('/branch/:branchId', read);
+router.put('/branch/update/:branchId',   update);
+router.delete('/branch/:branchId', remove);
+//-------------list------------------------
+router.get('/branchs/', list);
+ //-------------params----------------------
+router.param('userId', userById);
+router.param('branchId', branchById);
+//---------------Export the module---------
 module.exports = router;

@@ -1,39 +1,19 @@
-const express = require("express");
+//-----------------Imports Lib-------------
+const express = require('express');
 const router = express.Router();
-
-const {
-    create,
-    clientById,
-    read,
-    remove,
-    update,
-    list,
-    photo
-} = require("../controllers/client");
-const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
-const { userById } = require("../controllers/user");
-
-router.get("/client/:clientId", read);
-router.post("/client/create/:userId", requireSignin, isAuth, isAdmin, create);
-router.delete(
-    "/client/:clientId/:userId",
-    requireSignin,
-    isAuth,
-    isAdmin,
-    remove
-);
-router.put(
-    "/client/:clientId/:userId",
-    requireSignin,
-    isAuth,
-    isAdmin,
-    update
-);
-
-router.get("/clients", list);
-router.get("/client/photo/:clientId", photo);
-
-router.param("userId", userById);
-router.param("clientId", clientById);
-
+//-----------------Imports-----------------
+const { create,clientById, read, remove, update, list } = require('../controllers/client');
+const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const { userById } = require('../controllers/user');
+//-------------CRUD------------------------
+// router.post("/client/create/:userId", requireSignin, isAuth, isAdmin, create);
+router.post('/client/create/', create);
+router.put('/client/update/:clientId',   update);
+router.delete('/client/delete/:clientId', remove);
+//-------------list------------------------
+router.get('/clients/', list);
+ //-------------params----------------------
+router.param('userId', userById);
+router.param('clientId', clientById);
+//---------------Export the module---------
 module.exports = router;

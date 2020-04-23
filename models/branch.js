@@ -28,10 +28,6 @@ const branchSchema = new mongoose.Schema(
       ref: 'City',
       required: true,
     },
-    photo: {
-      data: Buffer,
-      contentType: String
-  },
   },
   { timestamps: true },
 );
