@@ -82,7 +82,7 @@ exports.list = (req, res) => {
     sorter = str[0] ? str[0] : '_id';
     order = str[1] == 'ascend' ? 1 : -1;
   } catch (e) {
-    console.log("error in the background list");
+    console.log("error in the background list ");
   }
   //-----------------------find Item---------------------------
   var fName = req.query.name ? req.query.name : '',
