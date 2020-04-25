@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const websitePagesListSchema = new mongoose.Schema(
+const websitePageSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -18,4 +18,4 @@ const websitePagesListSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("WebsitePagesList", websitePagesListSchema);
+module.exports = mongoose.model("WebsitePage", websitePageSchema);

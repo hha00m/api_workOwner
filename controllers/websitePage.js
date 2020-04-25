@@ -1,21 +1,21 @@
-const WebsitePagesList = require('../models/websitePagesList');
+const WebsitePage = require('../models/websitePage');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
-exports.websitePagesListById = (req, res, next, id) => {
-  WebsitePagesList.findById(id).exec((err, websitePagesList) => {
-    if (err || !websitePagesList) {
+exports.websitePageById = (req, res, next, id) => {
+  WebsitePage.findById(id).exec((err, websitePage) => {
+    if (err || !websitePage) {
       return res.status(400).json({
         error: 'التخويل غير موجودة يرجى اضافتها',
       });
     }
-    req.websitePagesList = websitePagesList;
+    req.websitePage = websitePage;
     next();
   });
 };
 
 exports.create = (req, res) => {
-  const websitePagesList = new WebsitePagesList(req.body);
-  websitePagesList.save((err, data) => {
+  const websitePage = new WebsitePage(req.body);
+  websitePage.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -26,14 +26,14 @@ exports.create = (req, res) => {
 };
 
 exports.read = (req, res) => {
-  return res.json(req.websitePagesList);
+  return res.json(req.websitePage);
 };
 
 exports.update = (req, res) => {
-  const websitePagesList = req.websitePagesList;
-  websitePagesList.name = req.body.name;
-  websitePagesList.note = req.body.note;
-  websitePagesList.save((err, data) => {
+  const websitePage = req.websitePage;
+  websitePage.name = req.body.name;
+  websitePage.note = req.body.note;
+  websitePage.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -44,15 +44,15 @@ exports.update = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  let websitePagesList = req.websitePagesList;
-  websitePagesList.remove((err, data) => {
+  let websitePage = req.websitePage;
+  websitePage.remove((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: 'websitePagesList deleted successfully',
+      message: 'websitePage deleted successfully',
     });
   });
 };
@@ -81,20 +81,20 @@ exports.list = (req, res) => {
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
-  const total = WebsitePagesList.find(query).count;
-  WebsitePagesList.find(query)
+  const total = WebsitePage.find(query).count;
+  WebsitePage.find(query)
     .sort([[sorter, order]])
     .skip(current * pageSize)
     .limit(pageSize)
-    .exec((err, cities) => {
+    .exec((err, websitePages) => {
       if (err) {
         return res.status(400).json({
-          error: ' websitePagesList not found',
+          error: ' websitePage not found',
         });
       }
 
       res.json({
-        data: cities,
+        data: websitePages,
         total,
         success: true,
         pageSize,
