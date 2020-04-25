@@ -1,21 +1,21 @@
-const City = require('../models/city');
+const WebsitePagesList = require('../models/websitePagesList');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
-exports.cityById = (req, res, next, id) => {
-  City.findById(id).exec((err, city) => {
-    if (err || !city) {
+exports.websitePagesListById = (req, res, next, id) => {
+  WebsitePagesList.findById(id).exec((err, websitePagesList) => {
+    if (err || !websitePagesList) {
       return res.status(400).json({
-        error: 'المدينه غير موجودة يرجى اضافتها',
+        error: 'التخويل غير موجودة يرجى اضافتها',
       });
     }
-    req.city = city;
+    req.websitePagesList = websitePagesList;
     next();
   });
 };
 
 exports.create = (req, res) => {
-  const city = new City(req.body);
-  city.save((err, data) => {
+  const websitePagesList = new WebsitePagesList(req.body);
+  websitePagesList.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -26,14 +26,14 @@ exports.create = (req, res) => {
 };
 
 exports.read = (req, res) => {
-  return res.json(req.city);
+  return res.json(req.websitePagesList);
 };
 
 exports.update = (req, res) => {
-  const city = req.city;
-  city.name = req.body.name;
-  city.note = req.body.note;
-  city.save((err, data) => {
+  const websitePagesList = req.websitePagesList;
+  websitePagesList.name = req.body.name;
+  websitePagesList.note = req.body.note;
+  websitePagesList.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -44,15 +44,15 @@ exports.update = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  let city = req.city;
-  city.remove((err, data) => {
+  let websitePagesList = req.websitePagesList;
+  websitePagesList.remove((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: 'city deleted successfully',
+      message: 'websitePagesList deleted successfully',
     });
   });
 };
@@ -81,13 +81,15 @@ exports.list = (req, res) => {
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
-  const total = City.find(query).count;
-  City.find(query)
+  const total = WebsitePagesList.find(query).count;
+  WebsitePagesList.find(query)
     .sort([[sorter, order]])
-      .exec((err, cities) => {
+    .skip(current * pageSize)
+    .limit(pageSize)
+    .exec((err, cities) => {
       if (err) {
         return res.status(400).json({
-          error: 'city not found',
+          error: ' websitePagesList not found',
         });
       }
 

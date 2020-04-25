@@ -2,18 +2,18 @@
 const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
-const { create,storeById, read, remove, update, list } = require('../controllers/store');
+const { create, newJobTitleById, read, remove, update, list } = require('../controllers/newJobTitle');
 const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-// router.post("/client/create/:userId", requireSignin, isAuth, isAdmin, create);
-router.post('/store/create/', create);
-router.put('/store/update/:storeId',   update);
-router.delete('/store/delete/:storeId', remove);
+ router.post('/newJobTitle/create/', create);
+router.get('/newJobTitle/:newJobTitleId', read);
+router.put('/newJobTitle/update/:newJobTitleId',   update);
+router.delete('/newJobTitle/:newJobTitleId', remove);
 //-------------list------------------------
-router.get('/stores/', list);
+router.get('/newJobTitles/', list);
  //-------------params----------------------
 router.param('userId', userById);
-router.param('storeId', storeById);
+router.param('newJobTitleId', newJobTitleById);
 //---------------Export the module---------
 module.exports = router;

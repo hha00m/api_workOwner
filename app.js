@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const categoryRoutes = require('./routes/category');
 const cityRoutes = require('./routes/city');
+const newJobTitleRoutes = require('./routes/newJobTitle');
 const clientRoutes = require('./routes/client');
 const productRoutes = require('./routes/product');
 const branchRoutes = require('./routes/branch');
@@ -28,6 +29,7 @@ const trackingRoutes = require('./routes/tracking');
 const orderTypeRoutes = require('./routes/orderType');
 const orderRoutes = require('./routes/order');
 const ruleRoutes = require('./routes/rule');
+const websitePagesListRoutes = require('./routes/websitePagesList');
 
 
 // app
@@ -56,6 +58,7 @@ app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', cityRoutes);
+app.use('/api', websitePagesListRoutes);
 app.use('/api', clientRoutes);
 app.use('/api', productRoutes);
 app.use('/api', branchRoutes);
@@ -73,6 +76,7 @@ app.use('/api', receiptRoutes);
 app.use('/api', trackingRoutes);
 app.use('/api', orderTypeRoutes);
 app.use('/api', orderRoutes);
+app.use('/api', newJobTitleRoutes);
 
 const port = process.env.PORT || 8050;
 

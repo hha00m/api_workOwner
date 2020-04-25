@@ -108,6 +108,28 @@ exports.list = (req, res) => {
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
   const total = Town.find(query).count;
+  // Town.aggregate(
+  //   [
+  //       {
+  //           "$project" : {
+  //               // "_id" : NumberInt(0),
+  //               "towns" : "$$ROOT"
+  //           }
+  //       },
+  //       {
+  //           "$lookup" : {
+  //               "localField" : "towns.city",
+  //               "from" : "cities",
+  //               "foreignField" : "_id",
+  //               "as" : "cities"
+  //           }
+  //       },
+  //       {
+  //         "$match": {"cities.name" : { $regex: '.*' + fCity + '.*' }}
+  //       }
+
+  //   ])
+
   Town.find(query)
     .populate({
       path: 'city',
