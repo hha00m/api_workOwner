@@ -11,7 +11,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const categoryRoutes = require('./routes/category');
 const cityRoutes = require('./routes/city');
-const newJobTitleRoutes = require('./routes/jobTitle');
+const jobTitleRoutes = require('./routes/jobTitle');
 const clientRoutes = require('./routes/client');
 const productRoutes = require('./routes/product');
 const branchRoutes = require('./routes/branch');
@@ -30,7 +30,7 @@ const orderTypeRoutes = require('./routes/orderType');
 const orderRoutes = require('./routes/order');
 const ruleRoutes = require('./routes/rule');
 const websitePageRoutes = require('./routes/websitePage');
-
+const permissionRoutes = require('./routes/permission');
 
 // app
 const app = express();
@@ -66,8 +66,8 @@ app.use('/api', orderStatusRoutes);
 app.use('/api', townRoutes);
 app.use('/api', storeRoutes);
 app.use('/api', clientDeliveryPriceRoutes);
-app.use('/api',addressRoutes);
-app.use('/api',townRoutes);
+app.use('/api', addressRoutes);
+app.use('/api', townRoutes);
 app.use('/api', staffRoutes);
 app.use('/api', roleRoutes);
 app.use('/api', messageRoutes);
@@ -76,7 +76,8 @@ app.use('/api', receiptRoutes);
 app.use('/api', trackingRoutes);
 app.use('/api', orderTypeRoutes);
 app.use('/api', orderRoutes);
-app.use('/api', newJobTitleRoutes);
+app.use('/api', jobTitleRoutes);
+app.use('/api', permissionRoutes);
 
 const port = process.env.PORT || 8050;
 
