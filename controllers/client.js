@@ -5,7 +5,7 @@ const Client = require('../models/client');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
 exports.clientById = (req, res, next, id) => {
-  Employee.findById(id).exec((err, client) => {
+  Client.findById(id).exec((err, client) => {
     if (err || !client) {
       return res.status(400).json({
         error: 'client not found',
@@ -58,7 +58,6 @@ exports.update = (req, res) => {
   client.city = req.body.city;
   client.photo = req.body.photo;
   client.mobile = req.body.mobile;
-  client.jobTitle = req.body.jobTitle;
   client.save((err, data) => {
     if (err) {
       return res.status(400).json({

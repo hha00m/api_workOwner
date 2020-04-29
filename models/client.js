@@ -25,11 +25,6 @@ const clientSchema = new mongoose.Schema(
       ref: 'Branch',
       required: true,
     },
-    jobTitle: {
-      type: ObjectId,
-      ref: 'JobTitle',
-      required: true,
-    },
     mobile: {
       type: String,
     },
@@ -38,10 +33,6 @@ const clientSchema = new mongoose.Schema(
       maxlength: 200,
     },
     address: {
-      type: String,
-      maxlength: 200,
-    },
-    details: {
       type: String,
       maxlength: 200,
     },
