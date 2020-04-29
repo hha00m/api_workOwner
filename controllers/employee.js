@@ -1,31 +1,31 @@
 const formidable = require('formidable');
 const _ = require('lodash');
 const fs = require('fs');
-const Partner = require('../models/partner');
+const Employee = require('../models/employee');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
-exports.partnerById = (req, res, next, id) => {
-  Partner.findById(id).exec((err, partner) => {
-    if (err || !partner) {
+exports.employeeById = (req, res, next, id) => {
+  Employee.findById(id).exec((err, employee) => {
+    if (err || !employee) {
       return res.status(400).json({
-        error: 'partner not found',
+        error: 'employee not found',
       });
     }
-    console.log('partner found ...');
-    req.partner = partner;
+    console.log('employee found ...');
+    req.employee = employee;
     next();
   });
 };
 
 exports.read = (req, res) => {
-  req.partner.photo = undefined;
-  return res.json(req.partner);
+  req.employee.photo = undefined;
+  return res.json(req.employee);
 };
 
 exports.create = (req, res) => {
   console.log(req.body);
-  const partner = new Partner(req.body);
-  partner.save((err, data) => {
+  const employee = new Employee(req.body);
+  employee.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -36,29 +36,30 @@ exports.create = (req, res) => {
 };
 exports.remove = (req, res) => {
   console.log('--------------');
-  let partner = req.partner;
-  partner.remove((err, data) => {
+  let employee = req.employee;
+  employee.remove((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: 'partner deleted successfully',
+      message: 'Employee deleted successfully',
     });
   });
 };
 exports.update = (req, res) => {
-  const partner = req.partner;
-  partner.name = req.body.name;
-  partner.town = req.body.town;
-  partner.branch = req.body.branch;
-  partner.address = req.body.address;
-  partner.note = req.body.note;
-  partner.city = req.body.city;
-  partner.details = req.body.details;
-  partner.mobile = req.body.mobile;
-  partner.save((err, data) => {
+  const employee = req.employee;
+  employee.name = req.body.name;
+  employee.town = req.body.town;
+  employee.branch = req.body.branch;
+  employee.address = req.body.address;
+  employee.note = req.body.note;
+  employee.city = req.body.city;
+  employee.photo = req.body.photo;
+  employee.mobile = req.body.mobile;
+  employee.jobTitle = req.body.jobTitle;
+  employee.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -105,13 +106,10 @@ exports.list = (req, res) => {
   if (fCenter !== '') {
     query['$and'].push({ center: { $regex: '.*' + fName + '.*' } });
   }
-  if (fCenter !== '') {
-    query['$and'].push({ center: fCenter });
-  }
 
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const total = Partner.find(query).count;
+  const total = Employee.find(query).count;
   // Town.aggregate(
   //   [
   //       {
@@ -134,25 +132,26 @@ exports.list = (req, res) => {
 
   //   ])
 
-  Partner.find(query)
+  Employee.find(query)
     .populate({
       path: 'city',
       match: { name: { $regex: '.*' + fCity + '.*' } },
     })
     .populate('town')
     .populate('branch')
+    .populate('jobTitle')
     .sort([[sorter, order]])
     .skip(current * pageSize)
     .limit(pageSize)
-    .exec((err, partners) => {
+    .exec((err, employees) => {
       if (err) {
         return res.status(400).json({
-          error: 'partners not found',
+          error: 'Employees not found',
         });
       }
 
       res.json({
-        data: partners,
+        data: employees,
         total,
         success: true,
         pageSize,
@@ -160,11 +159,11 @@ exports.list = (req, res) => {
       });
     });
 };
-exports.logo = (req, res, next) => {
-  console.log("you are here")
-  if (req.partner.logo.data) {
-      res.set("Content-Type", req.partner.logo.contentType);
-      return res.send(req.partner.logo.data);
+exports.photo = (req, res, next) => {
+  console.log('you are here');
+  if (req.employee.photo.data) {
+    res.set('Content-Type', req.employee.photo.contentType);
+    return res.send(req.employee.photo.data);
   }
   next();
 };

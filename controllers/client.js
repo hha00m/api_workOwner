@@ -5,7 +5,7 @@ const Client = require('../models/client');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
 exports.clientById = (req, res, next, id) => {
-  Client.findById(id).exec((err, client) => {
+  Employee.findById(id).exec((err, client) => {
     if (err || !client) {
       return res.status(400).json({
         error: 'client not found',
@@ -17,11 +17,13 @@ exports.clientById = (req, res, next, id) => {
   });
 };
 
-
+exports.read = (req, res) => {
+  req.client.photo = undefined;
+  return res.json(req.client);
+};
 
 exports.create = (req, res) => {
-  //console.log("name is:",req.body.name," city is:", req.body.city,"    :",req.body.center,"     :",req.body.note)
-
+  console.log(req.body);
   const client = new Client(req.body);
   client.save((err, data) => {
     if (err) {
@@ -49,21 +51,27 @@ exports.remove = (req, res) => {
 exports.update = (req, res) => {
   const client = req.client;
   client.name = req.body.name;
-  client.mobile = req.body.mobile;
-  client.note = req.body.note;
+  client.town = req.body.town;
   client.branch = req.body.branch;
+  client.address = req.body.address;
+  client.note = req.body.note;
+  client.city = req.body.city;
+  client.photo = req.body.photo;
+  client.mobile = req.body.mobile;
+  client.jobTitle = req.body.jobTitle;
   client.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
+    console.log(data);
     res.json(data);
   });
 };
 
 /**
- *  /api/clients?current=1&pageSize=20&sorter=
+ *  /api/towns?current=1&pageSize=20&sorter=
  *
  *
     let order = req.query.order ? req.query.order : "asc";
@@ -82,11 +90,11 @@ exports.list = (req, res) => {
     sorter = str[0] ? str[0] : '_id';
     order = str[1] == 'ascend' ? 1 : -1;
   } catch (e) {
-    console.log("error in the background list ");
+    console.log(e);
   }
   //-----------------------find Item---------------------------
   var fName = req.query.name ? req.query.name : '',
-    fCity = req.query.branch ? req.query.branch : '';
+    fCity = req.query.city ? req.query.city : '';
   fCenter = req.query.center ? req.query.center : '';
 
   //------------------------------------------------------
@@ -98,18 +106,40 @@ exports.list = (req, res) => {
   if (fCenter !== '') {
     query['$and'].push({ center: { $regex: '.*' + fName + '.*' } });
   }
-  if (fCenter !== '') {
-    query['$and'].push({ center: fCenter });
-  }
 
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
   const total = Client.find(query).count;
+  // Town.aggregate(
+  //   [
+  //       {
+  //           "$project" : {
+  //               // "_id" : NumberInt(0),
+  //               "towns" : "$$ROOT"
+  //           }
+  //       },
+  //       {
+  //           "$lookup" : {
+  //               "localField" : "towns.city",
+  //               "from" : "cities",
+  //               "foreignField" : "_id",
+  //               "as" : "cities"
+  //           }
+  //       },
+  //       {
+  //         "$match": {"cities.name" : { $regex: '.*' + fCity + '.*' }}
+  //       }
+
+  //   ])
+
   Client.find(query)
     .populate({
-      path: 'Branch',
+      path: 'city',
       match: { name: { $regex: '.*' + fCity + '.*' } },
     })
+    .populate('town')
+    .populate('branch')
+    .populate('jobTitle')
     .sort([[sorter, order]])
     .skip(current * pageSize)
     .limit(pageSize)
@@ -128,4 +158,12 @@ exports.list = (req, res) => {
         current,
       });
     });
+};
+exports.photo = (req, res, next) => {
+  console.log('you are here');
+  if (req.client.photo.data) {
+    res.set('Content-Type', req.client.photo.contentType);
+    return res.send(req.client.photo.data);
+  }
+  next();
 };

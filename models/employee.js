@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const uuidv1 = require('uuid/v1');
 const { ObjectId } = mongoose.Schema;
 
-const clientSchema = new mongoose.Schema(
+const employeeSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -57,7 +57,7 @@ const clientSchema = new mongoose.Schema(
   { timestamps: true },
 );
 // virtual field
-clientSchema
+employeeSchema
   .virtual('password')
   .set(function (password) {
     this._password = password;
@@ -68,7 +68,7 @@ clientSchema
     return this._password;
   });
 
-  clientSchema.methods = {
+employeeSchema.methods = {
   authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },
@@ -82,4 +82,4 @@ clientSchema
     }
   },
 };
-module.exports = mongoose.model('Client', clientSchema);
+module.exports = mongoose.model('Employee', employeeSchema);
