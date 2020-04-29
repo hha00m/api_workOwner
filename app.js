@@ -29,6 +29,7 @@ const trackingRoutes = require('./routes/tracking');
 const orderTypeRoutes = require('./routes/orderType');
 const orderRoutes = require('./routes/order');
 const ruleRoutes = require('./routes/rule');
+const partnerRoutes = require('./routes/partner');
 const websitePageRoutes = require('./routes/websitePage');
 const permissionRoutes = require('./routes/permission');
 
@@ -77,6 +78,7 @@ app.use('/api', trackingRoutes);
 app.use('/api', orderTypeRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', jobTitleRoutes);
+app.use('/api', partnerRoutes);
 app.use('/api', permissionRoutes);
 
 const port = process.env.PORT || 8050;

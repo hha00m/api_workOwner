@@ -6,6 +6,15 @@
     "configurations": [
       {
         "type": "node",
+        "request": "launch",
+        "name": "Launch Program",
+        "program": "${workspaceFolder}/app.js",
+        "skipFiles": [
+          "<node_internals>/**"
+        ]
+      },
+      {
+        "type": "node",
         "request": "attach",
         "name": "Attach by Process ID",
         "processId": "${command:PickProcess}",
@@ -17,7 +26,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost/api",
+            "url": "http://localhost:8050/api",
             "webRoot": "${workspaceFolder}"
         }
     ]
