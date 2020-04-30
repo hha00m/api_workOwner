@@ -2,18 +2,18 @@
 const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
-const { create, addressById, read, remove, update, list } = require('../controllers/address');
+const { create, moneyStatusById, read, remove, update, list } = require('../controllers/moneyStatus');
 const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
- router.post('/address/create/', create);
-router.get('/address/:addressId', read);
-router.put('/address/update/:addressId',   update);
-router.delete('/address/:addressId', remove);
+ router.post('/moneyStatus/create/', create);
+router.get('/moneyStatus/:moneyStatusId', read);
+router.put('/moneyStatus/update/:moneyStatusId',   update);
+router.delete('/moneyStatus/:moneyStatusId', remove);
 //-------------list------------------------
-router.get('/addresses/', list);
+router.get('/moneyStatuses/', list);
  //-------------params----------------------
 router.param('userId', userById);
-router.param('addressId', addressById);
+router.param('moneyStatusId', moneyStatusById);
 //---------------Export the module---------
 module.exports = router;

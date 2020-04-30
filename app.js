@@ -33,6 +33,7 @@ const partnerRoutes = require('./routes/partner');
 const websitePageRoutes = require('./routes/websitePage');
 const permissionRoutes = require('./routes/permission');
 const employeeRoutes = require('./routes/employee');
+const moneyStatusRoutes = require('./routes/moneyStatus');
 
 // app
 const app = express();
@@ -82,6 +83,7 @@ app.use('/api', jobTitleRoutes);
 app.use('/api', partnerRoutes);
 app.use('/api', permissionRoutes);
 app.use('/api', employeeRoutes);
+app.use('/api', moneyStatusRoutes);
 
 const port = process.env.PORT || 8050;
 

@@ -1,30 +1,30 @@
 const formidable = require('formidable');
 const _ = require('lodash');
 const fs = require('fs');
-const Address = require('../models/address');
+const MoneyStatus = require('../models/moneyStatus');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
-exports.addressById = (req, res, next, id) => {
-  Address.findById(id).exec((err, address) => {
-    if (err || !address) {
+exports.moneyStatusById = (req, res, next, id) => {
+  MoneyStatus.findById(id).exec((err, moneyStatus) => {
+    if (err || !moneyStatus) {
       return res.status(400).json({
-        error: 'address not found',
+        error: 'moneyStatus not found',
       });
     }
-    console.log('address found ...');
-    req.address = address;
+    console.log('moneyStatus found ...');
+    req.moneyStatus = moneyStatus;
     next();
   });
 };
 
 exports.read = (req, res) => {
-   return res.json(req.address);
+   return res.json(req.moneyStatus);
 };
 
 exports.create = (req, res) => {
    console.log(req.body.city);
-  const address = new Address(req.body);
-  address.save((err, data) => {
+  const moneyStatus = new MoneyStatus(req.body);
+  moneyStatus.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -35,24 +35,23 @@ exports.create = (req, res) => {
 };
 exports.remove = (req, res) => {
   // console.log('--------------');
-  let address = req.address;
-  address.remove((err, data) => {
+  let moneyStatus = req.moneyStatus;
+  moneyStatus.remove((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: 'address deleted successfully',
+      message: 'moneyStatus deleted successfully',
     });
   });
 };
 exports.update = (req, res) => {
-  const address = req.address;
-  address.town = req.body.town;
-  address.address = req.body.address;
-  address.city = req.body.city;
-  address.save((err, data) => {
+  const moneyStatus = req.moneyStatus;
+  moneyStatus.name = req.body.name;
+  moneyStatus.note = req.body.note;
+   moneyStatus.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -102,7 +101,7 @@ exports.list = (req, res) => {
 
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const total = Address.find(query).count;
+  const total = MoneyStatus.find(query).count;
   // Town.aggregate(
   //   [
   //       {
@@ -125,7 +124,7 @@ exports.list = (req, res) => {
 
   //   ])
 
-  Address.find(query)
+  MoneyStatus.find(query)
     .populate({
       path: 'city',
       match: { name: { $regex: '.*' + fCity + '.*' } },
@@ -136,15 +135,15 @@ exports.list = (req, res) => {
     .sort([[sorter, order]])
     .skip(current * pageSize)
     .limit(pageSize)
-    .exec((err, addresses) => {
+    .exec((err, moneyStatuses) => {
       if (err) {
         return res.status(400).json({
-          error: 'addresses not found',
+          error: 'moneyStatuses not found',
         });
       }
 
       res.json({
-        data: addresses,
+        data: moneyStatuses,
         total,
         success: true,
         pageSize,

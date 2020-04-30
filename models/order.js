@@ -15,14 +15,12 @@ const orderSchema = new mongoose.Schema(
     },
     newPrice: {
       type: Number,
-      require: true,
-      maxlength: 11,
+       maxlength: 11,
     },
     orederType: {
       type: ObjectId,
-      ref: 'OrderType',
-      required: true,
-    },
+      ref: 'Category',
+     },
     isBreakable: {
       type: Boolean,
       default: false,
@@ -34,11 +32,11 @@ const orderSchema = new mongoose.Schema(
     },
     driver: {
       type: ObjectId,
-      ref: 'Staff',
+      ref: 'Employee',
     },
     manager: {
       type: ObjectId,
-      ref: 'Staff',
+      ref: 'Employee',
     },
     moneyStatus: {
       type: ObjectId,
@@ -50,12 +48,10 @@ const orderSchema = new mongoose.Schema(
     toAddress: {
       type: ObjectId,
       ref: 'Address',
-      required: true,
-    },
+     },
     deliveryPrice: {
       type:Number,
-      required: true,
-    },
+     },
     fromBranch: {
       type: ObjectId,
       ref: 'Branch',
@@ -63,8 +59,7 @@ const orderSchema = new mongoose.Schema(
     toBranch: {
       type: ObjectId,
       ref: 'Branch',
-      required:true
-    },
+     },
     customerMobile: {
       type: Number,
       require: true,
@@ -74,7 +69,7 @@ const orderSchema = new mongoose.Schema(
     customerName: {
       type: String,
       trim: true,
-      maxlength: 200
+      maxlength: 50
     },
     withDelivery: {
       type: Boolean,
@@ -82,19 +77,21 @@ const orderSchema = new mongoose.Schema(
     },
     qty: {
       type: Number,
-      require: true,
-      maxlength: 11,
+       maxlength: 11,
       default: 1,
     },
     weight: {
       type: Number,
-      require: true,
-      maxlength: 11,
+       maxlength: 11,
       default: 1,
     },
     orderStatus: {
       type: ObjectId,
       ref: 'OrderStatus',
+    },
+    filledBy: {
+      type: ObjectId,
+      ref: 'Employee',
     },
     invoice: {
       type: ObjectId,
@@ -103,8 +100,7 @@ const orderSchema = new mongoose.Schema(
     store: {
       type: ObjectId,
       ref: 'Store',
-      required: true,
-    },
+     },
     confirmed: {
       type: Boolean,
       default: false,
