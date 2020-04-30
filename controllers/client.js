@@ -23,7 +23,7 @@ exports.read = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const client = new Client(req.body);
   client.save((err, data) => {
     if (err) {
@@ -35,7 +35,7 @@ exports.create = (req, res) => {
   });
 };
 exports.remove = (req, res) => {
-  console.log('--------------');
+  // console.log('--------------');
   let client = req.client;
   client.remove((err, data) => {
     if (err) {
@@ -64,7 +64,7 @@ exports.update = (req, res) => {
         error: errorHandler(err),
       });
     }
-    console.log(data);
+    // console.log(data);
     res.json(data);
   });
 };
@@ -159,7 +159,7 @@ exports.list = (req, res) => {
     });
 };
 exports.photo = (req, res, next) => {
-  console.log('you are here');
+  // console.log('you are here');
   if (req.client.photo.data) {
     res.set('Content-Type', req.client.photo.contentType);
     return res.send(req.client.photo.data);
