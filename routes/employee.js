@@ -12,7 +12,7 @@ router.get('/employee/:employeeId', read);
 router.put('/employee/update/:employeeId',   update);
 router.delete('/employee/:employeeId', remove);
 //-------------list------------------------
-router.get('/employee/', list);
+router.get('/employees/', list);
 router.get("/employee/photo/:employeeId", photo);
 
  //-------------params----------------------

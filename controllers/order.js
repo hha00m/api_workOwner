@@ -18,17 +18,18 @@ exports.orderById = (req, res, next, id) => {
 };
 
 exports.read = (req, res) => {
-   return res.json(req.order);
+  return res.json(req.order);
 };
 
 exports.create = (req, res) => {
-  // console.log(req.body);
+  console.log(req.body);
   const order = new Order(req.body);
   order.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
+      console.log(err);
     }
     res.json({ data });
   });
@@ -70,7 +71,7 @@ exports.update = (req, res) => {
   order.filledBy = req.body.filledBy;
   order.confirmed = req.body.confirmed;
 
-   order.save((err, data) => {
+  order.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -144,12 +145,18 @@ exports.list = (req, res) => {
   //   ])
 
   Order.find(query)
-    .populate({
-      path: 'address',
-      match: { address: { $regex: '.*' + fCity + '.*' } },
-    })
+
+    .populate('store')
+    .populate('moneyStatus')
     .populate('client')
-    .populate('branch')
+    .populate('driver')
+    .populate('toCity')
+    .populate('orderStatus')
+    .populate('category')
+    .populate('filledBy')
+    .populate('toTown')
+    .populate('fromBranch')
+    .populate('toBranch')
     .sort([[sorter, order1]])
     .skip(current * pageSize)
     .limit(pageSize)
@@ -159,7 +166,7 @@ exports.list = (req, res) => {
           error: 'orders not found',
         });
       }
-
+      console.log(orders);
       res.json({
         data: orders,
         total,
@@ -169,4 +176,3 @@ exports.list = (req, res) => {
       });
     });
 };
-

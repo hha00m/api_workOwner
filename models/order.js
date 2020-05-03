@@ -6,21 +6,21 @@ const orderSchema = new mongoose.Schema(
     order_no: {
       type: Number,
       require: true,
-      maxlength: 11,
+      maxlength: 20,
     },
     price: {
       type: Number,
       require: true,
-      maxlength: 11,
+      maxlength: 20,
     },
     newPrice: {
       type: Number,
-       maxlength: 11,
+      maxlength: 11,
     },
-    orederType: {
+    category: {
       type: ObjectId,
       ref: 'Category',
-     },
+    },
     isBreakable: {
       type: Boolean,
       default: false,
@@ -28,7 +28,10 @@ const orderSchema = new mongoose.Schema(
     client: {
       type: ObjectId,
       ref: 'Client',
-      required: true,
+     },
+     store: {
+      type: ObjectId,
+      ref: 'Store',
     },
     driver: {
       type: ObjectId,
@@ -45,13 +48,22 @@ const orderSchema = new mongoose.Schema(
     isAgreed: {
       type: Boolean,
     },
-    toAddress: {
+    toCity: {
       type: ObjectId,
-      ref: 'Address',
-     },
+      ref: 'City',
+    },
+    toTown: {
+      type: ObjectId,
+      ref: 'Town',
+    },
+    toAddress: {
+      type: String,
+      trim: true,
+      maxlength: 50,
+    },
     deliveryPrice: {
-      type:Number,
-     },
+      type: Number,
+    },
     fromBranch: {
       type: ObjectId,
       ref: 'Branch',
@@ -59,17 +71,14 @@ const orderSchema = new mongoose.Schema(
     toBranch: {
       type: ObjectId,
       ref: 'Branch',
-     },
+    },
     customerMobile: {
       type: Number,
-      require: true,
-      maxlength: 11,
-      minlength: 11,
-    },
+     },
     customerName: {
       type: String,
       trim: true,
-      maxlength: 50
+      maxlength: 50,
     },
     withDelivery: {
       type: Boolean,
@@ -77,12 +86,12 @@ const orderSchema = new mongoose.Schema(
     },
     qty: {
       type: Number,
-       maxlength: 11,
+      maxlength: 11,
       default: 1,
     },
     weight: {
       type: Number,
-       maxlength: 11,
+      maxlength: 11,
       default: 1,
     },
     orderStatus: {
@@ -97,10 +106,7 @@ const orderSchema = new mongoose.Schema(
       type: ObjectId,
       ref: 'Invoice',
     },
-    store: {
-      type: ObjectId,
-      ref: 'Store',
-     },
+
     confirmed: {
       type: Boolean,
       default: false,
