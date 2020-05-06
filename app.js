@@ -11,6 +11,8 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const categoryRoutes = require('./routes/category');
 const cityRoutes = require('./routes/city');
+const deliveryCompanyNameRoutes = require('./routes/2_deliveryCompanyName');
+const deliveryPriceForCompanyRoutes = require('./routes/2_deliveryPriceForCompany');
 const jobTitleRoutes = require('./routes/jobTitle');
 const clientRoutes = require('./routes/client');
 const productRoutes = require('./routes/product');
@@ -84,6 +86,8 @@ app.use('/api', partnerRoutes);
 app.use('/api', permissionRoutes);
 app.use('/api', employeeRoutes);
 app.use('/api', moneyStatusRoutes);
+app.use('/api',deliveryCompanyNameRoutes);
+ app.use('/api',deliveryPriceForCompanyRoutes);
 
 const port = process.env.PORT || 8050;
 
