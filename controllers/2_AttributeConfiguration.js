@@ -1,32 +1,32 @@
 const formidable = require('formidable');
 const _ = require('lodash');
 const fs = require('fs');
-const DeliveryPriceForCompany = require('../models/2_deliveryPriceForCompany');
+const AttributeConfiguration = require('../models/2_AttributeConfiguration');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
-exports.deliveryPriceForCompanyById = (req, res, next, id) => {
-  DeliveryPriceForCompany.findById(id).exec((err, deliveryPriceForCompany) => {
-    if (err || !deliveryPriceForCompany) {
+exports.attributeConfigurationById = (req, res, next, id) => {
+  AttributeConfiguration.findById(id).exec((err, attributeConfiguration) => {
+    if (err || !attributeConfiguration) {
       return res.status(400).json({
-        error: 'deliveryPriceForCompany not found',
+        error: 'attributeConfiguration not found',
       });
     }
-    console.log('deliveryPriceForCompany found ...');
-    req.deliveryPriceForCompany = deliveryPriceForCompany;
+    console.log('attributeConfiguration found ...');
+    req.attributeConfiguration = attributeConfiguration;
     next();
   });
 };
 
 exports.read = (req, res) => {
-  req.deliveryPriceForCompany.photo = undefined;
-  return res.json(req.deliveryPriceForCompany);
+  req.attributeConfiguration.photo = undefined;
+  return res.json(req.attributeConfiguration);
 };
 
 exports.create = (req, res) => {
-  console.log( req.body)
+  //console.log("name is:",req.body.name," city is:", req.body.city,"    :",req.body.center,"     :",req.body.note)
 
-  const deliveryPriceForCompany = new DeliveryPriceForCompany(req.body);
-  deliveryPriceForCompany.save((err, data) => {
+  const attributeConfiguration = new AttributeConfiguration(req.body);
+  attributeConfiguration.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -37,24 +37,23 @@ exports.create = (req, res) => {
 };
 exports.remove = (req, res) => {
   console.log('--------------');
-  let deliveryPriceForCompany = req.deliveryPriceForCompany;
-  deliveryPriceForCompany.remove((err, data) => {
+  let attributeConfiguration = req.attributeConfiguration;
+  attributeConfiguration.remove((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: 'deliveryPriceForCompany deleted successfully',
+      message: 'attributeConfiguration deleted successfully',
     });
   });
 };
 exports.update = (req, res) => {
-  const deliveryPriceForCompany = req.deliveryPriceForCompany;
-  deliveryPriceForCompany.price = req.body.price;
-  deliveryPriceForCompany.deliveryCompanyName = req.body.deliveryCompanyName;
-  deliveryPriceForCompany.city = req.body.city;
-  deliveryPriceForCompany.save((err, data) => {
+  const attributeConfiguration = req.attributeConfiguration;
+  attributeConfiguration.name = req.body.name;
+  attributeConfiguration.attributeName = req.body.attributeName;
+  attributeConfiguration.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -65,7 +64,7 @@ exports.update = (req, res) => {
 };
 
 /**
- *  /api/deliveryPriceForCompanies?current=1&pageSize=20&sorter=
+ *  /api/attributeConfigurations?current=1&pageSize=20&sorter=
  *
  *
     let order = req.query.order ? req.query.order : "asc";
@@ -106,29 +105,46 @@ exports.list = (req, res) => {
 
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const total = DeliveryPriceForCompany.find(query).count;
+  const total = AttributeConfiguration.find(query).count;
+  // AttributeConfiguration.aggregate(
+  //   [
+  //       {
+  //           "$project" : {
+  //               // "_id" : NumberInt(0),
+  //               "attributeConfigurations" : "$$ROOT"
+  //           }
+  //       },
+  //       {
+  //           "$lookup" : {
+  //               "localField" : "attributeConfigurations.city",
+  //               "from" : "cities",
+  //               "foreignField" : "_id",
+  //               "as" : "cities"
+  //           }
+  //       },
+  //       {
+  //         "$match": {"cities.name" : { $regex: '.*' + fCity + '.*' }}
+  //       }
 
+  //   ])
 
-  DeliveryPriceForCompany.find(query)
+  AttributeConfiguration.find(query)
     .populate({
-      path: 'city',
+      path: 'attributeName',
       match: { name: { $regex: '.*' + fCity + '.*' } },
     })
-    .populate(
-       'deliveryCompanyName'
-    )
     .sort([[sorter, order]])
     .skip(current * pageSize)
     .limit(pageSize)
-    .exec((err, deliveryPriceForCompanies) => {
+    .exec((err, attributeConfigurations) => {
       if (err) {
         return res.status(400).json({
-          error: 'deliveryPriceForCompanies not found',
+          error: 'attributeConfigurations not found',
         });
       }
 
       res.json({
-        data: deliveryPriceForCompanies,
+        data: attributeConfigurations,
         total,
         success: true,
         pageSize,

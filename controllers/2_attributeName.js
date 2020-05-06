@@ -1,21 +1,21 @@
-const DeliveryCompanyName = require('../models/2_deliveryCompanyName');
+const AttributeName = require('../models/2_attributeName');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
-exports.deliveryCompanyNameById = (req, res, next, id) => {
-  DeliveryCompanyName.findById(id).exec((err, deliveryCompanyName) => {
-    if (err || !deliveryCompanyName) {
+exports.attributeNameById = (req, res, next, id) => {
+  AttributeName.findById(id).exec((err, attributeName) => {
+    if (err || !attributeName) {
       return res.status(400).json({
         error: 'المدينه غير موجودة يرجى اضافتها',
       });
     }
-    req.deliveryCompanyName = deliveryCompanyName;
+    req.attributeName = attributeName;
     next();
   });
 };
 
 exports.create = (req, res) => {
-  const deliveryCompanyName = new DeliveryCompanyName(req.body);
-  deliveryCompanyName.save((err, data) => {
+  const attributeName = new AttributeName(req.body);
+  attributeName.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -26,14 +26,13 @@ exports.create = (req, res) => {
 };
 
 exports.read = (req, res) => {
-  return res.json(req.deliveryCompanyName);
+  return res.json(req.attributeName);
 };
 
 exports.update = (req, res) => {
-  const deliveryCompanyName = req.deliveryCompanyName;
-  deliveryCompanyName.name = req.body.name;
-  deliveryCompanyName.note = req.body.note;
-  deliveryCompanyName.save((err, data) => {
+  const attributeName = req.attributeName;
+  attributeName.name = req.body.name;
+  attributeName.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -44,15 +43,15 @@ exports.update = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  let deliveryCompanyName = req.deliveryCompanyName;
-  deliveryCompanyName.remove((err, data) => {
+  let attributeName = req.attributeName;
+  attributeName.remove((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: 'deliveryCompanyName deleted successfully',
+      message: 'attributeName deleted successfully',
     });
   });
 };
@@ -81,18 +80,18 @@ exports.list = (req, res) => {
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
-  const total = DeliveryCompanyName.find(query).count;
-  DeliveryCompanyName.find(query)
+  const total = AttributeName.find(query).count;
+  AttributeName.find(query)
     .sort([[sorter, order]])
-      .exec((err, deliveryCompanyNames) => {
+      .exec((err, attributeNames) => {
       if (err) {
         return res.status(400).json({
-          error: 'deliveryCompanyNames not found',
+          error: 'attributeNames not found',
         });
       }
 
       res.json({
-        data: deliveryCompanyNames,
+        data: attributeNames,
         total,
         success: true,
         pageSize,

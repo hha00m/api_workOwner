@@ -13,7 +13,8 @@ const deliveryCompanyNameSchema = new mongoose.Schema(
           type: String,
           trim: true,
           maxlength: 64
-        }
+        },
+        price:  {type: Array}
     },
     { timestamps: true }
 );

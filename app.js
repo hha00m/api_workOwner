@@ -36,6 +36,8 @@ const websitePageRoutes = require('./routes/websitePage');
 const permissionRoutes = require('./routes/permission');
 const employeeRoutes = require('./routes/employee');
 const moneyStatusRoutes = require('./routes/moneyStatus');
+const attNRoutes = require('./routes/2_attributeName');
+const attCRoutes = require('./routes/2_AttributeConfiguration');
 
 // app
 const app = express();
@@ -86,8 +88,10 @@ app.use('/api', partnerRoutes);
 app.use('/api', permissionRoutes);
 app.use('/api', employeeRoutes);
 app.use('/api', moneyStatusRoutes);
-app.use('/api',deliveryCompanyNameRoutes);
- app.use('/api',deliveryPriceForCompanyRoutes);
+app.use('/api', deliveryCompanyNameRoutes);
+app.use('/api', deliveryPriceForCompanyRoutes);
+app.use('/api', attCRoutes);
+app.use('/api', attNRoutes);
 
 const port = process.env.PORT || 8050;
 
