@@ -87,55 +87,32 @@ exports.list = (req, res) => {
   }
   //-----------------------find Item---------------------------
   var fName = req.query.name ? req.query.name : '',
-    fCity = req.query.city ? req.query.city : '';
-  fCenter = req.query.center ? req.query.center : '';
+    fCity = req.query.attributeName ? req.query.attributeName : '';
 
   //------------------------------------------------------
   var query = {};
-  if (fName != '' || fCenter != '') query['$and'] = [];
+  if (fName != ''  ) query['$and'] = [];
   if (fName !== '') {
     query['$and'].push({ name: { $regex: '.*' + fName + '.*' } });
   }
-  if (fCenter !== '') {
+  if (fName !== '') {
     query['$and'].push({ center: { $regex: '.*' + fName + '.*' } });
   }
-  if (fCenter !== '') {
-    query['$and'].push({ center: fCenter });
-  }
+
 
   let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
   const total = AttributeConfiguration.find(query).count;
-  // AttributeConfiguration.aggregate(
-  //   [
-  //       {
-  //           "$project" : {
-  //               // "_id" : NumberInt(0),
-  //               "attributeConfigurations" : "$$ROOT"
-  //           }
-  //       },
-  //       {
-  //           "$lookup" : {
-  //               "localField" : "attributeConfigurations.city",
-  //               "from" : "cities",
-  //               "foreignField" : "_id",
-  //               "as" : "cities"
-  //           }
-  //       },
-  //       {
-  //         "$match": {"cities.name" : { $regex: '.*' + fCity + '.*' }}
-  //       }
 
-  //   ])
 
   AttributeConfiguration.find(query)
     .populate({
       path: 'attributeName',
       match: { name: { $regex: '.*' + fCity + '.*' } },
     })
-    .sort([[sorter, order]])
-    .skip(current * pageSize)
-    .limit(pageSize)
+    // .sort([[sorter, order]])
+    // .skip(current * pageSize)
+    // .limit(pageSize)
     .exec((err, attributeConfigurations) => {
       if (err) {
         return res.status(400).json({
