@@ -10,7 +10,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const categoryRoutes = require('./routes/category');
-const cityRoutes = require('./routes/city');
+const governmentRoutes = require('./routes/government');
 const deliveryCompanyNameRoutes = require('./routes/2_deliveryCompanyName');
 const deliveryPriceForCompanyRoutes = require('./routes/2_deliveryPriceForCompany');
 const jobTitleRoutes = require('./routes/jobTitle');
@@ -46,10 +46,11 @@ const app = express();
 mongoose
   .connect(process.env.DATABASE, {
     useNewUrlParser: true,
-    useCreateIndex: true,
+    // useCreateIndex: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log('DB Connected'));
+  .then(() => console.log('DB Connected'))
+  .catch((err) => console.log(err));
 
 // middlewares
 app.use(morgan('dev'));
@@ -64,7 +65,7 @@ app.use('/api', ruleRoutes);
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
-app.use('/api', cityRoutes);
+app.use('/api', governmentRoutes);
 app.use('/api', websitePageRoutes);
 app.use('/api', clientRoutes);
 app.use('/api', productRoutes);

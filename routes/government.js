@@ -2,18 +2,18 @@
 const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
-const { create, cityById, read, remove, update, list } = require('../controllers/city');
+const { create, governmentById, read, remove, update, list } = require('../controllers/government');
 const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
- router.post('/city/create/', create);
-router.get('/city/:cityId', read);
-router.put('/city/update/:cityId',   update);
-router.delete('/city/:cityId', remove);
+router.post('/government/create', create);
+router.get('/government/:governmentId', read);
+router.put('/government/update', update);
+router.delete('/government/delete', remove);
 //-------------list------------------------
-router.get('/cities/', list);
- //-------------params----------------------
-router.param('userId', userById);
-router.param('cityId', cityById);
+router.get('/governments/', list);
+//-------------params----------------------
+router.param('/userId', userById);
+router.param('/governmentId', governmentById);
 //---------------Export the module---------
 module.exports = router;

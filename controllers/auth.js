@@ -4,7 +4,6 @@ const expressJwt = require('express-jwt'); // for authorization check
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
 exports.signup = (req, res) => {
-  // console.log("req.body", req.body);
   const user = new User(req.body);
   user.save((err, user) => {
     if (err) {
@@ -23,18 +22,18 @@ exports.signup = (req, res) => {
 
 exports.signin = (req, res) => {
   // find the user based on email
-  const { email, password, type } = req.body;
-  User.findOne({ email }, (err, user) => {
+  const { username, password, type } = req.body;
+  User.findOne({ username }, (err, user) => {
     if (err || !user) {
       return res.status(400).json({
-        error: 'User with that email does not exist. Please signup',
+        error: 'User with that username does not exist. Please signup',
       });
     }
-    // if user is found make sure the email and password match
+    // if user is found make sure the username and password match
     // create authenticate method in user model
     if (!user.authenticate(password)) {
       return res.status(401).json({
-        error: 'Email and password dont match',
+        error: 'Error',
       });
     }
     // generate a signed token with user id and secret
@@ -73,7 +72,7 @@ exports.signinusername = (req, res) => {
       console.log('not exsit');
 
       return res.status(401).json({
-        error: 'username and password dont match',
+        error: 'Error',
       });
     }
     // generate a signed token with user id and secret
@@ -105,7 +104,7 @@ exports.signinMobile = (req, res) => {
     // create authenticate method in user model
     if (!user.authenticate(password)) {
       return res.status(401).json({
-        error: 'تأكد من رقم الموبايل او كلمة المرور, غير صحيحة',
+        error: 'Error',
       });
     }
     // generate a signed token with user id and secret
