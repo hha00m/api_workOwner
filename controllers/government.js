@@ -31,7 +31,7 @@ exports.read = (req, res) => {
 
 exports.update = (req, res) => {
 
-  Government.update({ _id: req.body._id }, {
+  Government.update({ _id: req.body.id }, {
     $set: { name: req.body.name, note: req.body.note }
   }).then((result) => { res.json(result) })
     .catch((err) => {
@@ -54,66 +54,27 @@ exports.remove = (req, res) => {
 exports.list = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-
+  const q = req.query.name ? { $text: { $search: req.query.name } } :
+    req.query.note ? { $text: { $search: req.query.note } } : {}
 
   Government
-    .find()
-    .skip(pageSize * current)
-    .limit(pageSize)
+    .find(q)
+    // .skip(pageSize * current)
+    // .limit(pageSize)
     .sort({ name: 1 })
     .then((governments) => {
       res.json({
         data: governments,
         success: true,
-        pageSize,
         current,
+        pageSize,
+        total: governments.length,
       });
     }).catch((err) => {
       return res.status(400).json({
+        success: false,
         error: 'government not found',
       })
     })
 
-
-
-  // //---------------------sort live--------------------------
-  // let sort = req.query.sorter;
-  // let sorter = '_id';
-  // let order = 1;
-  // try {
-  //   let str = sort.split('_');
-  //   sorter = str[0] ? str[0] : '_id';
-  //   order = str[1] == 'ascend' ? 1 : -1;
-  // } catch (e) {
-  //   // console.log(e);
-  // }
-
-  // let name = req.query.name ? req.query.name : '';
-
-  // var query = {};
-  // if (name !== '') {
-  //   query['$and'] = [];
-  //   query['$and'].push({ name: { $regex: '.*' + name + '.*' } });
-  // }
-  // let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
-  // let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-
-  // const total = Government.find(query).count;
-  // Government.find(query)
-  //   .sort([[sorter, order]])
-  //   .exec((err, governments) => {
-  //     if (err) {
-  //       return res.status(400).json({
-  //         error: 'government not found',
-  //       });
-  //     }
-
-  //     res.json({
-  //       data: governments,
-  //       total: total.length,
-  //       success: true,
-  //       pageSize,
-  //       current,
-  //     });
-  //   });
 };

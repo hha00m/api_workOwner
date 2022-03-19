@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const categoryRoutes = require('./routes/category');
 const governmentRoutes = require('./routes/government');
+const pageRoutes = require('./routes/page');
 const deliveryCompanyNameRoutes = require('./routes/2_deliveryCompanyName');
 const deliveryPriceForCompanyRoutes = require('./routes/2_deliveryPriceForCompany');
 const jobTitleRoutes = require('./routes/jobTitle');
@@ -47,6 +48,7 @@ mongoose
   .connect(process.env.DATABASE, {
     useNewUrlParser: true,
     // useCreateIndex: true,
+    autoIndex: true,
     useUnifiedTopology: true,
   })
   .then(() => console.log('DB Connected'))
@@ -66,6 +68,7 @@ app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', governmentRoutes);
+app.use('/api', pageRoutes);
 app.use('/api', websitePageRoutes);
 app.use('/api', clientRoutes);
 app.use('/api', productRoutes);

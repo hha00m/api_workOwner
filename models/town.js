@@ -9,16 +9,16 @@ const townSchema = new mongoose.Schema(
       required: true,
       maxlength: 32,
     },
-    city: {
+    government: {
       type: ObjectId,
-      ref: 'City',
+      ref: 'Government',
       required: true,
     },
     center: {
       type: String,
       default: "كلا",
     },
-     note: {
+    note: {
       type: String,
       maxlength: 200,
     },
