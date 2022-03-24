@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Page = require('../models/page');
 
 const jobTitleSchema = new mongoose.Schema(
     {
@@ -9,11 +10,13 @@ const jobTitleSchema = new mongoose.Schema(
             maxlength: 100
         },
 
-        note: {
-          type: String,
-          trim: true,
-          maxlength: 200
-        }
+        icon: {
+            type: String,
+            trim: true,
+            maxlength: 200
+        },
+
+        pages: [Page.schema]
     },
     { timestamps: true }
 );

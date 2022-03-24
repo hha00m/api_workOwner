@@ -1,7 +1,6 @@
 const Page = require('../models/page');
 const PagePermisions = require('../models/pagePermisions');
 const { errorHandler } = require('../helpers/dbErrorHandler');
-const pagePermisions = require('../models/pagePermisions');
 
 exports.pageById = (req, res, next, id) => {
   Page.findById(id).exec((err, page) => {
@@ -32,44 +31,44 @@ exports.read = (req, res) => {
 };
 
 const getSubPages = async (req, res) => {
-  const page = await Page.findById(req.body.parent);
-  const Pagep = new PagePermisions({ name: req.body.name });
-  Pagep.save()
-  req.body.page === 'page1' ? page.page1 = Pagep :
-    req.body.page === 'page2' ? page.page2 = Pagep :
-      req.body.page === 'page3' ? page.page3 = Pagep :
-        req.body.page === 'page4' ? page.page4 = Pagep :
-          req.body.page === 'page5' ? page.page5 = Pagep :
-            req.body.page === 'page6' ? page.page6 = Pagep :
-              req.body.page === 'page7' ? page.page7 = Pagep :
-                req.body.page === 'page8' ? page.page8 = Pagep :
-                  req.body.page === 'page9' ? page.page9 = Pagep :
-                    req.body.page === 'page10' ? page.page10 = Pagep :
-                      page.page11 = Pagep;
+  try {
+    const page = await Page.findById(req.body.parent);
+    const Pagep = new PagePermisions({ name: req.body.name });
+    req.body.page === 'page1' ? page.page1 = Pagep :
+      req.body.page === 'page2' ? page.page2 = Pagep :
+        req.body.page === 'page3' ? page.page3 = Pagep :
+          req.body.page === 'page4' ? page.page4 = Pagep :
+            req.body.page === 'page5' ? page.page5 = Pagep :
+              req.body.page === 'page6' ? page.page6 = Pagep :
+                req.body.page === 'page7' ? page.page7 = Pagep :
+                  req.body.page === 'page8' ? page.page8 = Pagep :
+                    req.body.page === 'page9' ? page.page9 = Pagep :
+                      req.body.page === 'page10' ? page.page10 = Pagep :
+                        page.page11 = Pagep;
 
-  page.save((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-      });
-    }
-    // console.log(data);
-    res.json(data);
-  })
+    page.save((err, data) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler(err),
+        });
+      }
+      return res.json(data);
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(400).json({
+      error: errorHandler(err),
+    })
+
+  }
+
 }
 
 exports.addSubpage = (req, res) => {
   return getSubPages(req, res);
 
 };
-// Page.update({ _id: req.body.parent }, {
-//   $set: { p },
-// }).then((result) => {
-//   res.json(result)
-// })
-//   .catch((err) => {
-//     return res.status(400).json({ error: errorHandler(err) })
-//   })
+
 
 exports.update = (req, res) => {
 

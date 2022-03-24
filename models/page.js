@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema;
 
 
 const pagePermisionsSchema = new mongoose.Schema(
@@ -7,7 +6,6 @@ const pagePermisionsSchema = new mongoose.Schema(
         name: {
             type: String,
             trim: true,
-            required: true,
             maxlength: 56
         },
         update: {
@@ -38,53 +36,19 @@ const pageSchema = new mongoose.Schema(
         name: {
             type: String,
             trim: true,
-            required: true,
             maxlength: 32
         },
-        page1: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page2: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page3: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page4: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page5: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page6: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page7: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page8: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page9: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page10: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
-        page11: {
-            type: ObjectId,
-            ref: 'PagePermisions',
-        },
+        page1: pagePermisionsSchema,
+        page2: pagePermisionsSchema,
+        page3: pagePermisionsSchema,
+        page4: pagePermisionsSchema,
+        page5: pagePermisionsSchema,
+        page6: pagePermisionsSchema,
+        page7: pagePermisionsSchema,
+        page8: pagePermisionsSchema,
+        page9: pagePermisionsSchema,
+        page10: pagePermisionsSchema,
+        page11: pagePermisionsSchema,
 
     },
     { timestamps: true }

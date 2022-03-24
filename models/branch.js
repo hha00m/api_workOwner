@@ -10,7 +10,7 @@ const branchSchema = new mongoose.Schema(
       unique: true,
       maxlength: 32,
     },
-    description: {
+    note: {
       type: String,
       maxlength: 200,
     },
@@ -18,14 +18,13 @@ const branchSchema = new mongoose.Schema(
     mobile: {
       type: String,
       trim: true,
-      required: true,
       unique: true,
       maxlength: 11,
       minlength: 11,
     },
-    city: {
+    government: {
       type: ObjectId,
-      ref: 'City',
+      ref: 'Government',
       required: true,
     },
   },

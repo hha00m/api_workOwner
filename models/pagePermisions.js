@@ -5,14 +5,13 @@ const pagePermisionsSchema = new mongoose.Schema(
         name: {
             type: String,
             trim: true,
-            required: true,
             maxlength: 56
         },
         update: {
             type: Boolean,
             default: true
         },
-        remove: {
+        deleting: {
             type: Boolean,
             default: true
         },

@@ -35,93 +35,58 @@ exports.create = (req, res) => {
   });
 };
 exports.remove = (req, res) => {
-  console.log('--------------');
-  let branch = req.branch;
-  branch.remove((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-      });
-    }
+  Branch.deleteOne({ _id: req.body.key[0] }).then((result) => {
     res.json({
-      message: 'branch deleted successfully',
+      message: 'Branch deleted successfully',
     });
-  });
+  }).catch((err) => {
+    return res.status(400).json({
+      error: errorHandler(err),
+    });
+  })
 };
+
 exports.update = (req, res) => {
-  console.log("name is:",req.body.name," city is:", req.body.city ,"     :",req.body.description,"     ",req.body.mobile)
+  Branch.update({ _id: req.body.id }, {
+    $set: {
+      name: req.body.name,
+      note: req.body.note,
+      mobile: req.body.mobile,
+      government: req.body.government,
+    },
+  }).then((result) => { res.json(result) })
+    .catch((err) => {
+      return res.status(400).json({ error: errorHandler(err) })
+    })
 
-  const branch = req.branch;
-  branch.name = req.body.name;
-  branch.mobile = req.body.mobile;
-  branch.description = req.body.description;
-  branch.city = req.body.city;
-  branch.save((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-      });
-    }
-    res.json(data);
-  });
+
 };
-
-/**
-  *
- *
-    let order = req.query.order ? req.query.order : "asc";
- * let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
- * let limit = req.query.limit ? parseInt(req.query.limit) : 6;
- */
 
 exports.list = (req, res) => {
-  //---------------------sort live--------------------------
-  let sort = req.query.sorter;
-  let str;
-  let sorter = '_id';
-  let order = 1;
-  try {
-    let str = sort.split('_');
-    sorter = str[0] ? str[0] : '_id';
-    order = str[1] == 'ascend' ? 1 : -1;
-  } catch (e) {
-    console.log(e);
-  }
-  //-----------------------find Item---------------------------
-  var fName = req.query.name ? req.query.name : '',
-    fCity = req.query.city ? req.query.city : '';
+  const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+  const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+  const q = req.query.name ? { $text: { $search: req.query.name } } :
+    req.query.note ? { $text: { $search: req.query.note } } : req.query.government ? { $text: { $search: req.query.government } } : {}
 
-  //------------------------------------------------------
-  var query = {};
-   if (fName !== '') {
-    query['$and'].push({ name: { $regex: '.*' + fName + '.*' } });
-  }
-
-
-  let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
-  let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const total = Branch.find(query).count;
-  Branch.find(query)
-    .populate({
-      path: 'city',
-      match: { name: { $regex: '.*' + fCity + '.*' } },
-    })
-    .sort([[sorter, order]])
-    .skip(current * pageSize)
-    .limit(pageSize)
-    .exec((err, branchs) => {
-      if (err) {
-        return res.status(400).json({
-          error: 'branchs not found',
-        });
-      }
-
+  Branch
+    .find(q)
+    .populate('government', 'name _id')
+    // .skip(pageSize * current)
+    // .limit(pageSize)
+    .sort({ name: 1 })
+    .then((towns) => {
       res.json({
-        data: branchs,
-        total,
+        data: towns,
         success: true,
-        pageSize,
         current,
+        pageSize,
+        total: towns.length,
       });
-    });
+    }).catch((err) => {
+      return res.status(400).json({
+        success: false,
+        error: 'Town not found',
+      })
+    })
+
 };

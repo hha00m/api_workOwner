@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const uuidv1 = require('uuid/v1');
 const { ObjectId } = mongoose.Schema;
+const Government = require('../models/government');
 
 const clientSchema = new mongoose.Schema(
   {
@@ -10,15 +11,6 @@ const clientSchema = new mongoose.Schema(
       trim: true,
       required: true,
       maxlength: 32,
-    },
-    city: {
-      type: ObjectId,
-      ref: 'City',
-      required: true,
-    },
-    town: {
-      type: ObjectId,
-      ref: 'Town',
     },
     branch: {
       type: ObjectId,
@@ -36,10 +28,19 @@ const clientSchema = new mongoose.Schema(
       type: String,
       maxlength: 200,
     },
-    photo: {
+    photo: [{
       data: Buffer,
       contentType: String,
+    }],
+    visbalData: {
+      type: Boolean,
+      default: false,
     },
+    deliveryPrice: [{
+      government: Government.schema,
+      urbanPrice: Number,
+      ruralPrice: Number,
+    }],
     hashed_password: {
       type: String,
     },
@@ -59,7 +60,7 @@ clientSchema
     return this._password;
   });
 
-  clientSchema.methods = {
+clientSchema.methods = {
   authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },

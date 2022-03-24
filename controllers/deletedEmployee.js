@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const Employee = require('../models/employee');
+const Employee = require('../models/deletedEmployee');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
 exports.employeeById = (req, res, next, id) => {
@@ -46,9 +46,11 @@ exports.update = (req, res) => {
   Employee.update({ _id: req.body.id }, {
     $set: {
       name: req.body.name,
+      mobile: req.body.mobile,
+      photo: req.body.photo,
       note: req.body.note,
-      government: req.body.government,
-      center: req.body.center
+      brunch: req.body.brunch,
+      jobTitle: req.body.jobTitle
     },
   }).then((result) => { res.json(result) })
     .catch((err) => {

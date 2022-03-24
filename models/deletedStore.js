@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema;
 
-const storeSchema = new mongoose.Schema(
+const deletedDtoreSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -22,4 +22,4 @@ const storeSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-module.exports = mongoose.model('Store', storeSchema);
+module.exports = mongoose.model('DeletedStore', deletedDtoreSchema);

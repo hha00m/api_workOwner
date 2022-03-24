@@ -52,13 +52,12 @@ exports.remove = (req, res) => {
 };
 
 exports.list = (req, res) => {
-  const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
-  const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const q = req.query.name ? { $text: { $search: req.query.name } } :
-    req.query.note ? { $text: { $search: req.query.note } } : {}
+  const pageSize = 20; //page size which is limeit
+  const current = 0; // return currnet page else 0
+
 
   Government
-    .find(q)
+    .find()
     // .skip(pageSize * current)
     // .limit(pageSize)
     .sort({ name: 1 })

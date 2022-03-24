@@ -1,11 +1,11 @@
 const formidable = require('formidable');
 const _ = require('lodash');
 const fs = require('fs');
-const Client = require('../models/client');
+const ClientDeleted = require('../models/clientDeleted');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 const Store = require('../models/store');
-exports.clientById = (req, res, next, id) => {
-  Client.findById(id).exec((err, client) => {
+exports.clientDeletedById = (req, res, next, id) => {
+  ClientDeleted.findById(id).exec((err, client) => {
     if (err || !client) {
       return res.status(400).json({
         error: 'client not found',
@@ -23,7 +23,7 @@ exports.read = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  const client = new Client(req.body);
+  const client = new ClientDeleted(req.body);
   let governPrice = [];
   let price;
   req.body.governments.forEach(government => {
@@ -57,7 +57,7 @@ exports.create = (req, res) => {
   });
 };
 exports.remove = (req, res) => {
-  Client.deleteOne({ _id: req.body.key })
+  ClientDeleted.deleteOne({ _id: req.body.key })
     .then((result) => {
       res.json({
         message: 'Client deleted successfully',
@@ -71,7 +71,7 @@ exports.remove = (req, res) => {
     })
 };
 exports.update = (req, res) => {
-  Client.update({ _id: req.body.id }, {
+  ClientDeleted.update({ _id: req.body.id }, {
     $set: {
       name: req.body.name, address: req.body.address,
       mobile: req.body.mobile, note: req.body.note,
@@ -93,7 +93,7 @@ exports.list = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
-  Client
+  ClientDeleted
     .find()
     .populate('branch', 'name _id')
     // .skip(pageSize * current)
@@ -129,7 +129,7 @@ exports.listPrices = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
-  Client
+  ClientDeleted
     .find({ _id: req.query.id })
     .populate('deliveryPrice', 'name  _id')
     // .skip(pageSize * current)

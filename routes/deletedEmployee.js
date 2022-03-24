@@ -2,19 +2,18 @@
 const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
-const { create, branchById, read, remove, update, list } = require('../controllers/branch');
+const { create, deletedEmployeeById, read, remove, update, list } = require('../controllers/deleteddeletedEmployee');
 const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-// router.post("/branch/create/:userId", requireSignin, isAuth, isAdmin, create);
-router.post('/branch/create/', create);
-router.get('/branch/:branchId', read);
-router.put('/branch/update/', update);
-router.delete('/branch/delete', remove);
+router.post('/deletedEmployee/create', create);
+router.get('/deletedEmployee/:deletedEmployeeId', read);
+router.put('/deletedEmployee/update', update);
+router.delete('/deletedEmployee/delete', remove);
 //-------------list------------------------
-router.get('/branchs/', list);
+router.get('/deletedEmployees/', list);
 //-------------params----------------------
-router.param('userId', userById);
-router.param('branchId', branchById);
+router.param('/userId', userById);
+router.param('/deletedEmployeeId', deletedEmployeeById);
 //---------------Export the module---------
 module.exports = router;

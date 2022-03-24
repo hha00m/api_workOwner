@@ -1,40 +1,41 @@
 const _ = require('lodash');
-const Employee = require('../models/employee');
+const Store = require('../models/deletedStore');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
-exports.employeeById = (req, res, next, id) => {
-  Employee.findById(id).exec((err, employee) => {
-    if (err || !employee) {
+exports.storeById = (req, res, next, id) => {
+  Store.findById(id).exec((err, store) => {
+    if (err || !store) {
       return res.status(400).json({
-        error: 'employee not found',
+        error: 'store not found',
       });
     }
-    console.log('employee found ...');
-    req.employee = employee;
+    console.log('store found ...');
+    req.store = store;
     next();
   });
 };
 
 exports.read = (req, res) => {
-  req.employee.photo = undefined;
-  return res.json(req.employee);
+  req.store.photo = undefined;
+  return res.json(req.store);
 };
 
 exports.create = (req, res) => {
-  const employee = new Employee(req.body);
-  employee.save((err, data) => {
+  const store = new Store(req.body);
+  store.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
-    res.json({ data });
+    res.json({ success: true, data });
   });
 };
 exports.remove = (req, res) => {
-  Employee.deleteOne({ _id: req.body.key[0] }).then((result) => {
+  Store.deleteOne({ _id: req.body.key[0] }).then((result) => {
     res.json({
-      message: 'employee deleted successfully',
+      success: true,
+      message: 'store deleted successfully',
     });
   }).catch((err) => {
     return res.status(400).json({
@@ -43,17 +44,18 @@ exports.remove = (req, res) => {
   })
 };
 exports.update = (req, res) => {
-  Employee.update({ _id: req.body.id }, {
+  Store.update({ _id: req.body.id }, {
     $set: {
       name: req.body.name,
       note: req.body.note,
-      government: req.body.government,
-      center: req.body.center
+      client: req.body.client,
     },
-  }).then((result) => { res.json(result) })
+  }).then((result) => { res.json({ result, success: true }) })
     .catch((err) => {
       return res.status(400).json({ error: errorHandler(err) })
     })
+
+
 };
 
 
@@ -63,25 +65,24 @@ exports.list = (req, res) => {
   const q = req.query.name ? { $text: { $search: req.query.name } } :
     req.query.note ? { $text: { $search: req.query.note } } : req.query.government ? { $text: { $search: req.query.government } } : {}
 
-  Employee
+  Store
     .find(q)
-    .populate('jobTitle', 'name _id')
-    .populate('branch', 'name _id')
+    .populate('client', 'name _id')
     // .skip(pageSize * current)
     // .limit(pageSize)
     .sort({ name: 1 })
-    .then((employees) => {
+    .then((stores) => {
       res.json({
-        data: employees,
+        data: stores,
         success: true,
         current,
         pageSize,
-        total: employees.length,
+        total: stores.length,
       });
     }).catch((err) => {
       return res.status(400).json({
         success: false,
-        error: 'employee not found',
+        error: 'store not found',
       })
     })
 

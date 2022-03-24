@@ -1,6 +1,4 @@
-const formidable = require('formidable');
 const _ = require('lodash');
-const fs = require('fs');
 const Store = require('../models/store');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
@@ -17,11 +15,12 @@ exports.storeById = (req, res, next, id) => {
   });
 };
 
-
+exports.read = (req, res) => {
+  req.store.photo = undefined;
+  return res.json(req.store);
+};
 
 exports.create = (req, res) => {
-  //console.log("name is:",req.body.name," city is:", req.body.city,"    :",req.body.center,"     :",req.body.note)
-
   const store = new Store(req.body);
   store.save((err, data) => {
     if (err) {
@@ -29,103 +28,62 @@ exports.create = (req, res) => {
         error: errorHandler(err),
       });
     }
-    res.json({ data });
+    res.json({ success: true, data });
   });
 };
 exports.remove = (req, res) => {
-  console.log('--------------');
-  let store = req.store;
-  store.remove((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-      });
-    }
+  Store.deleteOne({ _id: req.body.key[0] }).then((result) => {
     res.json({
+      success: true,
       message: 'store deleted successfully',
     });
-  });
+  }).catch((err) => {
+    return res.status(400).json({
+      error: errorHandler(err),
+    });
+  })
 };
 exports.update = (req, res) => {
-  const store = req.store;
-  store.name = req.body.name;
-  store.mobile = req.body.mobile;
-  store.note = req.body.note;
-  store.client = req.body.client;
-  store.save((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-      });
-    }
-    res.json(data);
-  });
+  Store.update({ _id: req.body.id }, {
+    $set: {
+      name: req.body.name,
+      note: req.body.note,
+      client: req.body.client,
+    },
+  }).then((result) => { res.json({ result, success: true }) })
+    .catch((err) => {
+      return res.status(400).json({ error: errorHandler(err) })
+    })
+
+
 };
 
-/**
- *  /api/clients?current=1&pageSize=20&sorter=
- *
- *
-    let order = req.query.order ? req.query.order : "asc";
- * let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
- * let limit = req.query.limit ? parseInt(req.query.limit) : 6;
- */
 
 exports.list = (req, res) => {
-  //---------------------sort live--------------------------
-  let sort = req.query.sorter;
-  let str;
-  let sorter = '_id';
-  let order = 1;
-  try {
-    let str = sort.split('_');
-    sorter = str[0] ? str[0] : '_id';
-    order = str[1] == 'ascend' ? 1 : -1;
-  } catch (e) {
-    console.log("error in the background list ");
-  }
-  //-----------------------find Item---------------------------
-  var fName = req.query.name ? req.query.name : '',
-    fCity = req.query.branch ? req.query.branch : '';
-  fCenter = req.query.center ? req.query.center : '';
+  const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+  const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+  const q = req.query.name ? { $text: { $search: req.query.name } } :
+    req.query.note ? { $text: { $search: req.query.note } } : req.query.government ? { $text: { $search: req.query.government } } : {}
 
-  //------------------------------------------------------
-  var query = {};
-  if (fName != '' || fCenter != '') query['$and'] = [];
-  if (fName !== '') {
-    query['$and'].push({ name: { $regex: '.*' + fName + '.*' } });
-  }
-  if (fCenter !== '') {
-    query['$and'].push({ center: { $regex: '.*' + fName + '.*' } });
-  }
-  if (fCenter !== '') {
-    query['$and'].push({ center: fCenter });
-  }
-
-  let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
-  let current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const total = Store.find(query).count;
-  Store.find(query)
-    .populate({
-      path: 'Client',
-      match: { name: { $regex: '.*' + fCity + '.*' } },
-    })
-    .sort([[sorter, order]])
-    .skip(current * pageSize)
-    .limit(pageSize)
-    .exec((err, stores) => {
-      if (err) {
-        return res.status(400).json({
-          error: 'stores not found',
-        });
-      }
-
+  Store
+    .find(q)
+    .populate('client', 'name _id')
+    // .skip(pageSize * current)
+    // .limit(pageSize)
+    .sort({ name: 1 })
+    .then((stores) => {
       res.json({
         data: stores,
-        total,
         success: true,
-        pageSize,
         current,
+        pageSize,
+        total: stores.length,
       });
-    });
+    }).catch((err) => {
+      return res.status(400).json({
+        success: false,
+        error: 'store not found',
+      })
+    })
+
 };

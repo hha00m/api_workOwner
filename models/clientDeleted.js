@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const uuidv1 = require('uuid/v1');
 const { ObjectId } = mongoose.Schema;
+const Government = require('./government');
 
-const employeeSchema = new mongoose.Schema(
+const clientDeletedSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -11,15 +12,9 @@ const employeeSchema = new mongoose.Schema(
       required: true,
       maxlength: 32,
     },
-
     branch: {
       type: ObjectId,
       ref: 'Branch',
-      required: true,
-    },
-    jobTitle: {
-      type: ObjectId,
-      ref: 'JobTitle',
       required: true,
     },
     mobile: {
@@ -33,13 +28,18 @@ const employeeSchema = new mongoose.Schema(
       type: String,
       maxlength: 200,
     },
-    details: {
-      type: String,
-      maxlength: 200,
-    },
     photo: [{
       data: Buffer,
       contentType: String,
+    }],
+    visbalData: {
+      type: Boolean,
+      default: false,
+    },
+    deliveryPrice: [{
+      government: Government.schema,
+      urbanPrice: Number,
+      ruralPrice: Number,
     }],
     hashed_password: {
       type: String,
@@ -49,7 +49,7 @@ const employeeSchema = new mongoose.Schema(
   { timestamps: true },
 );
 // virtual field
-employeeSchema
+clientDeletedSchema
   .virtual('password')
   .set(function (password) {
     this._password = password;
@@ -60,7 +60,7 @@ employeeSchema
     return this._password;
   });
 
-employeeSchema.methods = {
+clientDeletedSchema.methods = {
   authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },
@@ -74,4 +74,4 @@ employeeSchema.methods = {
     }
   },
 };
-module.exports = mongoose.model('Employee', employeeSchema);
+module.exports = mongoose.model('ClientDeleted', clientDeletedSchema);
