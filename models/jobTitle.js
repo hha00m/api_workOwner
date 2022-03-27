@@ -15,6 +15,10 @@ const jobTitleSchema = new mongoose.Schema(
             trim: true,
             maxlength: 200
         },
+        deletable: {
+            type: Boolean,
+            default: false
+        },
 
         pages: [Page.schema]
     },

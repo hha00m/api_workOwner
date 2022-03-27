@@ -14,9 +14,21 @@ const townSchema = new mongoose.Schema(
       ref: 'Government',
       required: true,
     },
+    driver: {
+      type: ObjectId,
+      ref: 'Driver',
+    },
+    price: {
+      type: Number,
+      default: 2000,
+    },
     center: {
       type: String,
       default: "كلا",
+    },
+    allocated: {
+      type: Boolean,
+      default: false,
     },
     note: {
       type: String,

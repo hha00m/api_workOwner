@@ -48,7 +48,9 @@ exports.update = (req, res) => {
       name: req.body.name,
       note: req.body.note,
       government: req.body.government,
-      center: req.body.center
+      driver: req.body.driver,
+      center: req.body.center,
+      allocated: req.body.allocated,
     },
   }).then((result) => { res.json(result) })
     .catch((err) => {
@@ -76,6 +78,7 @@ exports.list = (req, res) => {
   Town
     .find(q)
     .populate('government', 'name _id')
+    .populate('driver', 'name _id')
     // .skip(pageSize * current)
     // .limit(pageSize)
     .sort({ name: 1 })
@@ -94,4 +97,61 @@ exports.list = (req, res) => {
       })
     })
 
+};
+exports.townsByGovernment = (req, res) => {
+  const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+  const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+  const q = req.query.name ? { $text: { $search: req.query.name } } :
+    req.query.note ? { $text: { $search: req.query.note } } : req.query.government ? { $text: { $search: req.query.government } } : {}
+
+  Town
+    .find({ government: req.query.governmentId })
+    .populate('government', 'name _id')
+    // .skip(pageSize * current)
+    // .limit(pageSize)
+    .sort({ name: 1 })
+    .then((towns) => {
+      res.json({
+        data: towns,
+        success: true,
+        current,
+        pageSize,
+        total: towns.length,
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        success: false,
+        error: 'Town not found',
+      })
+    })
+
+};
+exports.townsNotAlocated = (req, res) => {
+  try {
+    Town
+      .find({ allocated: null })
+      .populate('government', 'name _id')
+      .populate('driver', 'name _id')
+      // .skip(pageSize * current)
+      // .limit(pageSize)
+      .sort({ name: 1 })
+      .then((towns) => {
+        res.json({
+          data: towns,
+          success: true,
+          total: towns.length,
+        });
+      }).catch((err) => {
+        return res.status(400).json({
+          success: false,
+          error: 'Town not found',
+        })
+      })
+  }
+  catch (err) {
+    return res.status(400).json({
+      success: false,
+      error: 'Towns not found',
+    })
+  }
 };
