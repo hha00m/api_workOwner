@@ -106,6 +106,8 @@ exports.update = (req, res) => {
         mobile: req.body.mobile, note: req.body.note,
         brunch: req.body.brunch,
         active: req.body.active,
+        ruralPrice: req.body.ruralPrice,
+        urbanPrice: req.body.urbanPrice,
       },
     }).then((result) => {
       res.json({

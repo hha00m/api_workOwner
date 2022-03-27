@@ -24,6 +24,14 @@ const driverSchema = new mongoose.Schema(
       type: String,
       maxlength: 200,
     },
+    urbanPrice: {
+      type: Number,
+      default: 2000,
+    },
+    ruralPrice: {
+      type: Number,
+      default: 3000,
+    },
     address: {
       type: String,
       maxlength: 200,

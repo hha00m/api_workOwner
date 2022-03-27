@@ -51,6 +51,7 @@ exports.update = (req, res) => {
       driver: req.body.driver,
       center: req.body.center,
       allocated: req.body.allocated,
+      price: req.body.price,
     },
   }).then((result) => { res.json(result) })
     .catch((err) => {

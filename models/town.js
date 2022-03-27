@@ -20,7 +20,7 @@ const townSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      default: 2000,
+      default: 3000,
     },
     center: {
       type: String,

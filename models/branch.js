@@ -27,6 +27,10 @@ const branchSchema = new mongoose.Schema(
       ref: 'Government',
       required: true,
     },
+    price: {
+      type: Number,
+      default: 4000,
+    }
   },
   { timestamps: true },
 );
