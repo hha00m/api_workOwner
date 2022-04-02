@@ -27,7 +27,15 @@ const branchSchema = new mongoose.Schema(
       ref: 'Government',
       required: true,
     },
-    price: {
+    buy: {
+      type: Number,
+      default: 4000,
+    },
+    sell: {
+      type: Number,
+      default: 5000,
+    },
+    baghdadSell: {
       type: Number,
       default: 4000,
     }

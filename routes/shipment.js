@@ -2,18 +2,18 @@
 const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
-const { create, orderStatusById, read, remove, update, list } = require('../controllers/orderStatus');
+const { create, shipmentById, read, remove, update, list } = require('../controllers/shipment');
 const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-router.post('/orderStatus/create', create);
-router.get('/orderStatus/:orderStatusId', read);
-router.put('/orderStatus/update', update);
-router.delete('/orderStatus/delete', remove);
+router.post('/shipment/create', create);
+router.get('/shipment/:shipmentId', read);
+router.put('/shipment/update', update);
+router.delete('/shipment/delete', remove);
 //-------------list------------------------
-router.get('/orderStatuss/', list);
+router.get('/shipments', list);
 //-------------params----------------------
 router.param('/userId', userById);
-router.param('/orderStatusId', orderStatusById);
+router.param('/shipmentId', shipmentById);
 //---------------Export the module---------
 module.exports = router;

@@ -53,7 +53,9 @@ exports.update = (req, res) => {
       note: req.body.note,
       mobile: req.body.mobile,
       government: req.body.government,
-      price: req.body.price,
+      buy: req.body.buy,
+      sell: req.body.sell,
+      baghdadSell: req.body.baghdadSell,
     },
   }).then((result) => { res.json(result) })
     .catch((err) => {

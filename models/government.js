@@ -8,7 +8,10 @@ const governmentSchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
-
+        isCaptal: {
+            type: Boolean,
+            default: false,
+        },
         note: {
             type: String,
             trim: true,

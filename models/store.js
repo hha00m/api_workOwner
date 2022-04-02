@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema;
-
+const Client = require('./client');
 const storeSchema = new mongoose.Schema(
   {
     name: {
@@ -9,15 +9,11 @@ const storeSchema = new mongoose.Schema(
       required: true,
       maxlength: 32,
     },
-    client: {
-      type: ObjectId,
-      ref: 'Client',
-      required: true,
-    },
     note: {
       type: String,
       maxlength: 200,
     },
+    client: Client.schema,
   },
   { timestamps: true },
 );
