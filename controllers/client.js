@@ -3,19 +3,23 @@ const _ = require('lodash');
 const fs = require('fs');
 const Client = require('../models/client');
 const { errorHandler } = require('../helpers/dbErrorHandler');
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Schema;
+
 const Store = require('../models/store');
-exports.clientById = (req, res, next, id) => {
-  Client.findById(id).exec((err, client) => {
-    if (err || !client) {
-      return res.status(400).json({
-        error: 'client not found',
-      });
-    }
-    console.log('client found ...');
-    req.client = client;
-    next();
-  });
-};
+exports.clientById = (id) => {
+  try {
+    Client.find({ _id: id }).then((result) => {
+      return result;
+    }).catch((err) => {
+      return err;
+    });
+    return {};
+  }
+  catch (err) {
+    return {}
+  };
+}
 
 exports.read = (req, res) => {
   req.client.photo = undefined;

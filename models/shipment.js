@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Schema;
 const Government = require('./government');
 const Branch = require('./branch');
 const Town = require('./town');
@@ -32,7 +33,7 @@ const orderSchema = new mongoose.Schema(
       default: false,
     },
     customerMobile: {
-      type: Number,
+      type: String,
       maxlength: 11,
       minlength: 10,
     },
@@ -93,12 +94,32 @@ const orderSchema = new mongoose.Schema(
     driver: Driver.schema,
     createdBy: Employee.schema,
 
-    clientAccounting: Employee.schema,
     BranchAccounting: Employee.schema,
     driverAccounting: Employee.schema,
     clientInvoice: Invoice.schema,
+    clientReturnInvoice: {
+      type: ObjectId,
+      ref: 'Invoice',
+    },
+    isClientInvoiceGenrated: {
+      type: Boolean,
+      default: false
+    },
+    isParitalReturn: {
+      type: Boolean,
+      default: false
+    },
+    isReturned: {
+      type: Boolean,
+      default: false
+    },
     driverInvoice: Invoice.schema,
     branchInvoice: Invoice.schema,
+    importStorage: {
+      type: Boolean,
+      default: false,
+    },
+    storageImporter: Employee.schema,
   },
   { timestamps: true },
 );
