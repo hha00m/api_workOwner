@@ -39,7 +39,6 @@ const orderSchema = new mongoose.Schema(
     },
     weight: {
       type: Number,
-      maxlength: 11,
       default: 1,
     },
     confirmed: {
@@ -97,6 +96,10 @@ const orderSchema = new mongoose.Schema(
     BranchAccounting: Employee.schema,
     driverAccounting: Employee.schema,
     clientInvoice: Invoice.schema,
+    clientDInvoiceIndex: {
+      type: Number
+    },
+
     clientReturnInvoice: {
       type: ObjectId,
       ref: 'Invoice',

@@ -16,12 +16,10 @@ exports.shipmentById = (req, res, next, id) => {
     next();
   });
 };
-
 exports.read = (req, res) => {
   req.shipment.photo = undefined;
   return res.json(req.shipment);
 };
-
 exports.create = (req, res) => {
   const shipment = new Shipment(req.body);
   shipment.save((err, data) => {
@@ -70,12 +68,12 @@ exports.update = (req, res) => {
   }
 
 };
-
 exports.updateInvoice = (req, res) => {
   try {
     Shipment.update({ _id: req.body.id }, {
       $set: {
         clientInvoice: req.body.clientInvoice.invoiceId,
+        clientDInvoiceIndex: req.body.clientDInvoiceIndex,
       },
     }).then((result) => {
       res.json({ result, success: true })
@@ -88,7 +86,6 @@ exports.updateInvoice = (req, res) => {
   }
 
 };
-
 exports.ShipmentByClick = (req, res) => {
   const store = req?.query?.store;
   const startDate = new Date(req?.query?.range[0]);

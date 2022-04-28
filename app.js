@@ -9,6 +9,7 @@ require('dotenv').config();
 // import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const pdfRoutes = require('./routes/pdf');
 const categoryRoutes = require('./routes/category');
 const governmentRoutes = require('./routes/government');
 const pageRoutes = require('./routes/page');
@@ -68,6 +69,7 @@ app.disable('etag');
 
 // routes middleware
 app.use('/api', ruleRoutes);
+app.use('/api', pdfRoutes);
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
@@ -104,7 +106,7 @@ app.use('/api', deliveryCompanyNameRoutes);
 app.use('/api', deliveryPriceForCompanyRoutes);
 app.use('/api', attCRoutes);
 app.use('/api', attNRoutes);
-
+app.use('/pdf', express.static(__dirname + '/pathToPDF'));
 const port = process.env.PORT || 8050;
 
 app.listen(port, () => {

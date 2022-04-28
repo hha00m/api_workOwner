@@ -27,15 +27,14 @@ exports.create = async (req, res) => {
   const number = await Invoice.find({}).sort({ _id: -1 }).limit(1)
   const store = await Store.find({ _id: req.body[0].store })
   let inv = {
-    path: req.body[0].path,
-    isPaid: req.body[0].isPaid,
-    isReturned: req.body[0].isReturned,
-    numberOfshipments: req.body[0].numberOfshipments,
+    path: req.body[0]?.path,
+    isPaid: req.body[0]?.isPaid,
+    isReturned: req.body[0]?.isReturned,
+    numberOfshipments: req.body[0]?.numberOfshipments,
     store: store[0],
-    totalDeliveryPrice: req.body[0].totalDeliveryPrice,
-    totalPrice: req.body[0].totalPrice,
-    employee: req.body[0].employee,
-
+    totalDeliveryPrice: req.body[0]?.totalDeliveryPrice ? req.body[0]?.totalDeliveryPrice : 0,
+    totalPrice: req.body[0]?.totalPrice ? req.body[0]?.totalPrice : 0,
+    employee: req.body[0]?.employee,
     invoiceNumber: number[0] ? number[0]?.invoiceNumber + 1 : 1
   }
   const invoice = new Invoice(inv);
@@ -43,6 +42,7 @@ exports.create = async (req, res) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
+        success: false
       });
     }
     res.json({ success: true, data });
@@ -96,8 +96,6 @@ exports.update = (req, res) => {
 
 
 };
-
-
 exports.list = (req, res) => {
   try {
     const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
