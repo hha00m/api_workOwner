@@ -48,7 +48,7 @@ const orderSchema = new mongoose.Schema(
     note: {
       type: String,
       trim: true,
-      maxlength: 200,
+      maxlength: 250,
     },
     address: {
       type: String,
