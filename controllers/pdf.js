@@ -1,5 +1,8 @@
 const fs = require("fs");
-const PDFDocument = require("pdfkit-table");
+const puppeteer = require("puppeteer");
+const fse = require("fs-extra");
+const hbs = require("handlebars");
+const data = require('./pdf/data.json');
 
 exports.readpdf = (req, res) => {
     try {
@@ -12,69 +15,206 @@ exports.readpdf = (req, res) => {
             res.send(data);
         });
     } catch (err) {
-        console.log(err);
-    }
-};
-exports.returnPdf = (req, res) => {
-    try {
-
-        let doc = new PDFDocument({ margin: 15, size: 'A4', layout: 'landscape', info: { Title: "كشف راجع" } });
-        doc.pipe(fs.createWriteStream(req.body.invoice.path));
-
-        const customFontRegular = fs.readFileSync(`./controllers/fonts/Cairo-Regular.ttf`);
-        const customFontBold = fs.readFileSync('./controllers/fonts/Cairo-Bold.ttf');
-        doc.registerFont(`Amiri-Regular`, customFontRegular);
-        doc.registerFont(`Amiri-Bold`, customFontBold);
-
-        const statmentDetails = {
-            headers: ["اسم ", "بدون"],
-            rows: [
-                ["العميل", req.body.invoice.store.client.name],
-                ["الكشف", req.body.invoice.invoiceNumber],
-                // ["المحاسب", req.body.invoice],
-                ["التاريخ", req.body.invoice.createdAt],
-            ],
-        };
-        doc.table(statmentDetails, {
-            width: 150,
-            prepareHeader: () => doc.font("Amiri-Bold").fontSize(8),
-            prepareRow: (row, indexColumn, indexRow, rectRow) => {
-                doc.font("Amiri-Regular").fontSize(8);
-            }
-        });
-        doc.moveDown();
-        const table = {
-            headers: [
-                { label: "رقم الوصل", property: 'shipment_no', width: 50, renderer: null, align: 'center' },
-                { label: "أسم الصفحة", property: 'store', width: 120, renderer: null, align: 'center' },
-                { label: "التاريخ", property: 'createAt', width: 50, renderer: null, align: 'center' },
-                { label: "العنوان", property: 'address', width: 100, renderer: null, align: 'center' },
-                { label: "موبايل", property: 'customerMobile', width: 50, renderer: null, align: 'center' },
-                { label: "مبلغ الوصل", property: 'originalPrice', width: 50, renderer: null, align: 'center' },
-                { label: "مبلغ المستلم", property: 'newlPrice', width: 50, renderer: null, align: 'center' },
-                { label: "سعر التوصيل", property: 'clientDeliveryPrice', width: 50, renderer: null, align: 'center' },
-                { label: "الصافي", align: 'center', property: 'total', width: 50, renderer: (value, indexColumn, indexRow, row) => { return `U$ ${Number(value).toFixed(2)}` } },
-            ],
-
-            datas: req.body.data,
-        };
-
-        doc.table(table, {
-            prepareHeader: () => doc.font("Amiri-Bold").fontSize(10),
-            prepareRow: (row, indexColumn, indexRow, rectRow) => {
-                doc.font("Amiri-Regular").fontSize(8);
-                indexRow % 2 == 1 && doc.addBackground(rectRow, '#f4f4f4', 0.15)
-            }
-        });
-
-        doc.pipe(res);
-
-        doc.end();
-    } catch (error) {
-        return res.status(400).json({
+        res.status(400).json({
+            error: err,
             success: false,
         });
     }
+};
+const compile = async function (templateName, data) {
+    const filePath = __dirname + templateName;
 
+    // const filePath = path.join('./pdf/' + `${ templateName }.hbs`);
+    const html = await fse.readFile(filePath, 'utf8');
+    console.log(html)
+    return hbs.compile(html)(data);
+};
+exports.pdfReportDriver = async (req, res, next) => {
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        const content = await compile(`/../clientStatements/reports.hbs`, req.body);
+        await page.setContent(content);
+        await page.pdf({
+            path: req.body.invoice.path,
+            format: 'A4',
+            printBackground: true,
+            landscape: true,
+            margin: {
+                top: '15px',
+                right: '20px',
+                bottom: '15px',
+                left: '20px',
+            },
+        })
 
+        console.log("done creating pdf");
+        await browser.close();
+        // process.exit();
+    } catch (e) {
+        res.status(400).json({
+            error: e,
+            success: false,
+        });
+    }
+    next();
+};
+exports.pdfGen = async (req, res, next) => {
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
+        const content = await compile(`/../clientStatements/indexNoStatus.hbs`, req.body);
+        await page.setContent(content);
+        await page.pdf({
+            path: req.body.invoice.path,
+            format: 'A4',
+            printBackground: true,
+            landscape: true,
+            displayHeaderFooter: true,
+            pageRanges: '1',
+            margin: {
+                top: '15px',
+                right: '20px',
+                bottom: '15px',
+                left: '20px',
+            },
+
+        })
+
+        console.log("done creating pdf");
+        await browser.close();
+        // process.exit();
+    } catch (e) {
+        res.status(400).json({
+            error: e,
+            success: false,
+        });
+    }
+    next();
+};
+exports.pdfReturnClient = async (req, res, next) => {
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
+        const content = await compile(`/../clientStatements/indexReturnClient.hbs`, req.body);
+        await page.setContent(content);
+        await page.pdf({
+            path: req.body.invoice.path,
+            format: 'A4',
+            printBackground: true,
+            landscape: true,
+            margin: {
+                top: '15px',
+                right: '20px',
+                bottom: '15px',
+                left: '20px',
+            },
+
+        })
+
+        console.log("done creating pdf");
+        await browser.close();
+        // process.exit();
+    } catch (e) {
+        res.status(400).json({
+            error: e,
+            success: false,
+        });
+    }
+    next();
+};
+exports.pdfDeliveried_client = async (req, res, next) => {
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
+        const content = await compile(`/../clientStatements/indexDeliveriedClient.hbs`, req.body);
+        await page.setContent(content);
+        await page.pdf({
+            path: req.body.invoice.path,
+            format: 'A4',
+            printBackground: true,
+            landscape: true,
+            margin: {
+                top: '15px',
+                right: '20px',
+                bottom: '15px',
+                left: '20px',
+            },
+        })
+
+        console.log("done creating pdf");
+        await browser.close();
+        // process.exit();
+    } catch (e) {
+        res.status(400).json({
+            error: e,
+            success: false,
+        });
+    }
+    next();
+};
+exports.pdfDeliveried_driver = async (req, res, next) => {
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
+        const content = await compile(`/../clientStatements/indexDeliveriedClient.hbs`, req.body);
+        await page.setContent(content);
+        await page.pdf({
+            path: req.body.invoice.path,
+            format: 'A4',
+            printBackground: true,
+            landscape: true,
+            margin: {
+                top: '15px',
+                right: '20px',
+                bottom: '15px',
+                left: '20px',
+            },
+        })
+
+        console.log("done creating pdf");
+        await browser.close();
+        // process.exit();
+    } catch (e) {
+        res.status(400).json({
+            error: e,
+            success: false,
+        });
+    }
+    next();
+};
+exports.pdfDeliveried_branch = async (req, res, next) => {
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
+        const content = await compile(`/../clientStatements/indexDeliveriedClient.hbs`, req.body);
+        await page.setContent(content);
+        await page.pdf({
+            path: req.body.invoice.path,
+            format: 'A4',
+            printBackground: true,
+            landscape: true,
+            margin: {
+                top: '15px',
+                right: '20px',
+                bottom: '15px',
+                left: '20px',
+            },
+        })
+
+        console.log("done creating pdf");
+        await browser.close();
+        // process.exit();
+    } catch (e) {
+        res.status(400).json({
+            error: e,
+            success: false,
+        });
+    }
+    next();
 };

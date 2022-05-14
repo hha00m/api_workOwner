@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Branch = require('./branch');
+const Driver = require('./driver');
 const Employee = require('./employee');
 const Store = require('./store');
 const { ObjectId } = mongoose.Schema;
@@ -30,6 +32,8 @@ const invoiceSchema = new mongoose.Schema(
       default: false
     },
     store: Store.schema,
+    driver: Driver.schema,
+    branch: Branch.schema,
     numberOfShipments: {
       type: Number,
     },

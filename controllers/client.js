@@ -160,25 +160,32 @@ exports.listStores = (req, res) => {
 
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-
-  Store
-    .find({ client: req.query.id })
-    // .skip(pageSize * current)
-    // .limit(pageSize)
-    .sort({ name: 1 })
-    // .select('deliveryPrice  _id')
-    .then((data) => {
-      res.json({
-        data: data,
-        success: true,
-        current,
-        pageSize,
-        total: data.length,
-      });
-    }).catch((err) => {
-      return res.status(400).json({
-        error: 'jobtitle not found',
-        success: false,
+  try {
+    // 
+    Store
+      .find({ 'client._id': req.query.id })
+      // .skip(pageSize * current)
+      // .limit(pageSize)
+      .sort({ name: 1 })
+      // .select('deliveryPrice  _id')
+      .then((data) => {
+        res.json({
+          data: data,
+          success: true,
+          current,
+          pageSize,
+          total: data.length,
+        });
+      }).catch((err) => {
+        return res.status(400).json({
+          error: 'stores not found',
+          success: false,
+        })
       })
+  } catch (err) {
+    return res.status(400).json({
+      error: 'stores not found',
+      success: false,
     })
+  }
 }

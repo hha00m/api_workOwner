@@ -99,7 +99,12 @@ const orderSchema = new mongoose.Schema(
     clientDInvoiceIndex: {
       type: Number
     },
-
+    driverDInvoiceIndex: {
+      type: Number
+    },
+    branchDInvoiceIndex: {
+      type: Number
+    },
     clientReturnInvoice: {
       type: ObjectId,
       ref: 'Invoice',

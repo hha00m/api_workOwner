@@ -56,6 +56,34 @@ exports.update = (req, res) => {
         isParitalReturn: req.body.driverStatus?.name && (req.body.driverStatus.name === "راجع جزئي" ? true : false),
         isReturned: req.body.driverStatus?.name && (req.body.driverStatus.name === "راجع كلي" ? true : false),
         isClientInvoiceGenrated: req.body.isClientInvoiceGenrated,
+
+        shipment_no: req.body.shipment_no,
+        originalPrice: req.body.originalPrice,
+        newPrice: req.body.newPrice,
+        isBreakable: req.body.isBreakable,
+        pay: req.body.pay,
+        customerMobile: req.body.customerMobile,
+        weight: req.body.weight,
+        confirm: req.body.confirm,
+        note: req.body.note,
+        address: req.body.address,
+        clientDeliveryPrice: req.body.clientDeliveryPrice,
+        driverDeliveryPrice: req.body.driverDeliveryPrice,
+        branchDeliveryPrice: req.body.branchDeliveryPrice,
+        senderBranchPrice: req.body.senderBranchPrice,
+        driverMoneyStatus: req.body.driverMoneyStatus,
+        clientMoneyStatus: req.body.clientMoneyStatus,
+        BranchMoneyStatus: req.body.BranchMoneyStatus,
+        toGovernment: req.body.toGovernment,
+        toTown: req.body.toTown,
+        toBranch: req.body.toBranch,
+        fromBranch: req.body.fromBranch,
+        store: req.body.store,
+        clientDInvoiceIndex: req.body.clientDInvoiceIndex,
+        driverDInvoiceIndex: req.body.driverDInvoiceIndex,
+        branchDInvoiceIndex: req.body.clientDInvoiceIndex,
+
+
       },
     }).then((result) => {
       res.json({ result, success: true })
@@ -86,32 +114,42 @@ exports.updateInvoice = (req, res) => {
   }
 
 };
-exports.ShipmentByClick = (req, res) => {
-  const store = req?.query?.store;
-  const startDate = new Date(req?.query?.range[0]);
-  const endDate = new Date(req?.query?.range[1]);
-  const status = req?.query?.status;
-  Shipment
-    .find({
-      $or: [
-        { shipment_no: req.query?.shipment_no ? req.query?.shipment_no : '' },
-        { customerMobile: req.query.customerMobile ? req.query.customerMobile : '' }],
-      createdAt: { $gte: (startDate), $lt: (endDate) }, "store._id": (store),
-      'clientStatus.name': { "$in": status },
-      clientInvoice: { $exists: false }
+exports.updateInvoice_driver = (req, res) => {
+  try {
+    Shipment.update({ _id: req.body.id }, {
+      $set: {
+        driverInvoice: req.body.driverInvoice.invoiceId,
+        driverDInvoiceIndex: req.body.driverDInvoiceIndex,
+      },
+    }).then((result) => {
+      res.json({ result, success: true })
     })
-    .then((shipments) => {
-      res.json({
-        data: shipments,
-        success: true,
-      });
-    }).catch((err) => {
-      return res.status(400).json({
-        success: false,
-        error: 'shipment not found',
+      .catch((err) => {
+        return res.status(400).json({ error: errorHandler(err) })
       })
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler(err) })
+  }
+
+};
+exports.updateInvoice_branch = (req, res) => {
+  try {
+    Shipment.update({ _id: req.body.id }, {
+      $set: {
+        branchInvoice: req.body.branchInvoice.invoiceId,
+        branchDInvoiceIndex: req.body.branchDInvoiceIndex,
+      },
+    }).then((result) => {
+      res.json({ result, success: true })
     })
-}
+      .catch((err) => {
+        return res.status(400).json({ error: errorHandler(err) })
+      })
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler(err) })
+  }
+
+};
 const prepareQuery = (shipment_no, customerMobile, toGovernment,
   clientStatus, driverStatus, branchStatus, driver, note, senderBranchPrice,
   clientDeliveryPrice, driverDeliveryPrice, fromBranch, toBranch, toTown, store,
@@ -217,3 +255,167 @@ exports.listForAccounting = (req, res) => {
   }
 
 };
+exports.listForAccounting_driver = (req, res) => {
+  try {
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+    const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+    const driver = req?.query?.driver;
+    const startDate = new Date(req?.query?.range[0]);
+    const endDate = new Date(req?.query?.range[1]);
+    const status = req?.query?.status;
+    Shipment
+      .find({
+        createdAt: { $gte: (startDate), $lt: (endDate) }, "driver._id": (driver),
+        driverInvoice: { $exists: false },
+        'driverStatus.name': { "$in": status }
+      })
+      // .skip(pageSize * current)
+      // .limit(pageSize)
+      .sort({ shipment_no: 1 })
+      .then((shipments) => {
+        res.json({
+          data: shipments,
+          success: true,
+          current,
+          pageSize,
+          total: shipments.length,
+        });
+      }).catch((err) => {
+        return res.status(400).json({
+          success: false,
+          error: 'shipment not found',
+        })
+      })
+  }
+  catch (err) {
+    return res.json({
+      data: [],
+      success: true,
+      current,
+      pageSize,
+      total: 0,
+    });
+  }
+
+};
+exports.listForAccounting_branch = (req, res) => {
+  try {
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+    const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+    const branch = req?.query?.branch;
+    const startDate = new Date(req?.query?.range[0]);
+    const endDate = new Date(req?.query?.range[1]);
+    const status = req?.query?.status;
+    Shipment
+      .find({
+        createdAt: { $gte: (startDate), $lt: (endDate) }, "toBranch._id": (branch),
+        branchInvoice: { $exists: false },
+        'branchStatus.name': { "$in": status }
+      })
+      // .skip(pageSize * current)
+      // .limit(pageSize)
+      .sort({ shipment_no: 1 })
+      .then((shipments) => {
+        res.json({
+          data: shipments,
+          success: true,
+          current,
+          pageSize,
+          total: shipments.length,
+        });
+      }).catch((err) => {
+        return res.status(400).json({
+          success: false,
+          error: 'shipment not found',
+        })
+      })
+  }
+  catch (err) {
+    return res.json({
+      data: [],
+      success: true,
+      current,
+      pageSize,
+      total: 0,
+    });
+  }
+
+};
+exports.ShipmentByClick = (req, res) => {
+  const store = req?.query?.store;
+  const startDate = new Date(req?.query?.range[0]);
+  const endDate = new Date(req?.query?.range[1]);
+  const status = req?.query?.status;
+  Shipment
+    .find({
+      $or: [
+        { shipment_no: req.query?.shipment_no ? req.query?.shipment_no : '' },
+        { customerMobile: req.query.customerMobile ? req.query.customerMobile : '' }],
+      createdAt: { $gte: (startDate), $lt: (endDate) }, "store._id": (store),
+      'clientStatus.name': { "$in": status },
+      clientInvoice: { $exists: false }
+    })
+    .then((shipments) => {
+      res.json({
+        data: shipments,
+        success: true,
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        success: false,
+        error: 'shipment not found',
+      })
+    })
+}
+exports.ShipmentByClick_driver = (req, res) => {
+  const driver = req?.query?.driver;
+  const startDate = new Date(req?.query?.range[0]);
+  const endDate = new Date(req?.query?.range[1]);
+  const status = req?.query?.status;
+  Shipment
+    .find({
+      $or: [
+        { shipment_no: req.query?.shipment_no ? req.query?.shipment_no : '' },
+        { customerMobile: req.query.customerMobile ? req.query.customerMobile : '' }],
+      createdAt: { $gte: (startDate), $lt: (endDate) }, "driver._id": (driver),
+      'driverStatus.name': { "$in": status },
+      driverInvoice: { $exists: false }
+    })
+    .then((shipments) => {
+      res.json({
+        data: shipments,
+        success: true,
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        success: false,
+        error: 'shipment not found',
+      })
+    })
+}
+exports.ShipmentByClick_branch = (req, res) => {
+  const branch = req?.query?.branch;
+  const startDate = new Date(req?.query?.range[0]);
+  const endDate = new Date(req?.query?.range[1]);
+  const status = req?.query?.status;
+  Shipment
+    .find({
+      $or: [
+        { shipment_no: req.query?.shipment_no ? req.query?.shipment_no : '' },
+        { customerMobile: req.query.customerMobile ? req.query.customerMobile : '' }],
+      createdAt: { $gte: (startDate), $lt: (endDate) }, "toBranch._id": (branch),
+      'branchStatus.name': { "$in": status },
+      branchInvoice: { $exists: false }
+    })
+    .then((shipments) => {
+      res.json({
+        data: shipments,
+        success: true,
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        success: false,
+        error: 'shipment not found',
+      })
+    })
+}
