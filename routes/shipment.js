@@ -2,7 +2,10 @@
 const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
-const { create, shipmentById, read, remove, update, list, listForAccounting, updateInvoice, ShipmentByClick, listForAccounting_branch, listForAccounting_driver, ShipmentByClick_branch, ShipmentByClick_driver, updateInvoice_branch, updateInvoice_driver } = require('../controllers/shipment');
+const { create, shipmentById, read, remove, update, list, listForAccounting,
+    updateInvoice, ShipmentByClick, listForAccounting_branch, listForAccounting_driver,
+    ShipmentByClick_branch, ShipmentByClick_driver, updateInvoice_branch,
+    updateInvoice_driver } = require('../controllers/shipment');
 const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------

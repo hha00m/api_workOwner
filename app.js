@@ -44,6 +44,7 @@ const employeeRoutes = require('./routes/employee');
 const moneyStatusRoutes = require('./routes/moneyStatus');
 const attNRoutes = require('./routes/2_attributeName');
 const attCRoutes = require('./routes/2_AttributeConfiguration');
+const config = require('./routes/websiteConfig');
 
 // app
 const app = express();
@@ -106,6 +107,7 @@ app.use('/api', deliveryCompanyNameRoutes);
 app.use('/api', deliveryPriceForCompanyRoutes);
 app.use('/api', attCRoutes);
 app.use('/api', attNRoutes);
+app.use('/api', config);
 app.use('/pdf', express.static(__dirname + '/pathToPDF'));
 const port = process.env.PORT || 8050;
 

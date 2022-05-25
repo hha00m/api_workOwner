@@ -125,6 +125,70 @@ exports.pdfReturnClient = async (req, res, next) => {
     }
     next();
 };
+exports.pdfReturnDriver = async (req, res, next) => {
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
+        const content = await compile(`/../clientStatements/indexReturnDriver.hbs`, req.body);
+        await page.setContent(content);
+        await page.pdf({
+            path: req.body.invoice.path,
+            format: 'A4',
+            printBackground: true,
+            landscape: true,
+            margin: {
+                top: '15px',
+                right: '20px',
+                bottom: '15px',
+                left: '20px',
+            },
+
+        })
+
+        console.log("done creating pdf");
+        await browser.close();
+        // process.exit();
+    } catch (e) {
+        res.status(400).json({
+            error: e,
+            success: false,
+        });
+    }
+    next();
+};
+exports.pdfReturnBranch = async (req, res, next) => {
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
+        const content = await compile(`/../clientStatements/indexReturnBranch.hbs`, req.body);
+        await page.setContent(content);
+        await page.pdf({
+            path: req.body.invoice.path,
+            format: 'A4',
+            printBackground: true,
+            landscape: true,
+            margin: {
+                top: '15px',
+                right: '20px',
+                bottom: '15px',
+                left: '20px',
+            },
+
+        })
+
+        console.log("done creating pdf");
+        await browser.close();
+        // process.exit();
+    } catch (e) {
+        res.status(400).json({
+            error: e,
+            success: false,
+        });
+    }
+    next();
+};
 exports.pdfDeliveried_client = async (req, res, next) => {
     try {
         const browser = await puppeteer.launch();
@@ -161,7 +225,7 @@ exports.pdfDeliveried_driver = async (req, res, next) => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
-        const content = await compile(`/../clientStatements/indexDeliveriedClient.hbs`, req.body);
+        const content = await compile(`/../clientStatements/indexDeliveriedDriver.hbs`, req.body);
         await page.setContent(content);
         await page.pdf({
             path: req.body.invoice.path,
@@ -192,7 +256,7 @@ exports.pdfDeliveried_branch = async (req, res, next) => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         req.body.invoice.createdAt = req.body.invoice.createdAt.split('T')[0];
-        const content = await compile(`/../clientStatements/indexDeliveriedClient.hbs`, req.body);
+        const content = await compile(`/../clientStatements/indexDeliveriedBranch.hbs`, req.body);
         await page.setContent(content);
         await page.pdf({
             path: req.body.invoice.path,

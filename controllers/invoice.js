@@ -306,3 +306,103 @@ exports.list_branch = (req, res) => {
   }
 
 };
+
+exports.invoicesList = (req, res) => {
+  try {
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+    const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+    // const startDate = new Date(req?.query?.range[0]);
+    // const endDate = new Date(req?.query?.range[1]);
+    Invoice
+      .find({ store: { $exists: true } })
+      // .skip(pageSize * current)
+      // .limit(pageSize)
+      .sort({ name: 1 })
+      .then((invoices) => {
+        res.json({
+          data: invoices,
+          success: true,
+          current,
+          pageSize,
+          total: invoices.length,
+        });
+      }).catch((err) => {
+        return res.status(400).json({
+          success: false,
+          error: 'invoice not found',
+        })
+      })
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      error: 'invoice not found',
+    })
+  }
+
+};
+exports.invoicesList_branch = (req, res) => {
+  try {
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+    const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+    // const startDate = new Date(req?.query?.range[0]);
+    // const endDate = new Date(req?.query?.range[1]);
+    Invoice
+      .find({ branch: { $exists: true } })
+      // .skip(pageSize * current)
+      // .limit(pageSize)
+      .sort({ name: 1 })
+      .then((invoices) => {
+        res.json({
+          data: invoices,
+          success: true,
+          current,
+          pageSize,
+          total: invoices.length,
+        });
+      }).catch((err) => {
+        return res.status(400).json({
+          success: false,
+          error: 'invoice not found',
+        })
+      })
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      error: 'invoice not found',
+    })
+  }
+
+};
+exports.invoicesList_driver = (req, res) => {
+  try {
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+    const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+    // const startDate = new Date(req?.query?.range[0]);
+    // const endDate = new Date(req?.query?.range[1]);
+    Invoice
+      .find({ driver: { $exists: true } })
+      // .skip(pageSize * current)
+      // .limit(pageSize)
+      .sort({ name: 1 })
+      .then((invoices) => {
+        res.json({
+          data: invoices,
+          success: true,
+          current,
+          pageSize,
+          total: invoices.length,
+        });
+      }).catch((err) => {
+        return res.status(400).json({
+          success: false,
+          error: 'invoice not found',
+        })
+      })
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      error: 'invoice not found',
+    })
+  }
+
+};

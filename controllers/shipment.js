@@ -32,16 +32,23 @@ exports.create = (req, res) => {
   });
 };
 exports.remove = (req, res) => {
-  Shipment.deleteOne({ _id: req.body.key[0] }).then((result) => {
-    res.json({
-      success: true,
-      message: 'shipment deleted successfully',
-    });
-  }).catch((err) => {
+  try {
+    Shipment.deleteOne({ _id: req.body.key[0] }).then((result) => {
+      res.json({
+        success: true,
+        message: 'shipment deleted successfully',
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        error: errorHandler(err),
+      });
+    })
+  } catch (err) {
     return res.status(400).json({
       error: errorHandler(err),
     });
-  })
+  }
+
 };
 exports.update = (req, res) => {
   try {
