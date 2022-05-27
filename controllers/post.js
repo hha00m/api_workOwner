@@ -17,23 +17,17 @@ exports.branchById = (req, res, next, id) => {
 exports.update = (req, res) => {
   Branch.update({ _id: req.body.id }, {
     $set: {
-      leader: req.body.leader,
-      accountingday: req.body.accountingday,
-      newweek: req.body.newweek,
-      address: req.body.address,
-      baghdad: req.body.baghdad,
-      companyName: req.body.companyName,
-      governaments: req.body.governaments,
-      drivers: req.body.drivers,
-      overprice: req.body.overprice,
-      rural: req.body.rural,
-      phone: req.body.phone,
-      updateStatus: req.body.updateStatus,
-      clientsAd1: req.body.clientsAd1,
-      clientsAd2: req.body.clientsAd2,
-      driversAd1: req.body.driversAd1,
-      driversAd2: req.body.driversAd2,
-      logoPath: req.body.logoPath,
+      content: req.body.content,
+      shipment_no: req.body.shipment_no,
+      statment_no: req.body.statment_no,
+      mobile: req.body.mobile,
+      importance: req.body.importance,
+      open: req.body.open,
+      urgent: req.body.urgent,
+      postGroup: req.body.postGroup,
+      employee: req.body.employee,
+      imgPath: req.body.imgPath,
+      creater: req.body.creater
     },
   }).then((result) => { res.json(result) })
     .catch((err) => {
@@ -41,7 +35,20 @@ exports.update = (req, res) => {
     })
 };
 exports.create = (req, res) => {
-  const branch = new Branch(req.body);
+  const post = {
+    content: req.body.data.content,
+    shipment_no: req.body.data.shipment_no,
+    statment_no: req.body.data.statment_no,
+    mobile: req.body.data.mobile,
+    importance: req.body.data.importance,
+    open: req.body.data.open,
+    urgent: req.body.data.urgent,
+    postGroup: req.body.data.postGroup,
+    employee: req.body.data.employee,
+    imgPath: req.body.data.imgPath,
+    creater: req.body.currentUser
+  }
+  const branch = new Branch(post);
   branch.save((err, data) => {
     if (err) {
       return res.status(400).json({
@@ -69,7 +76,7 @@ exports.list = (req, res) => {
     .sort({ leader: 1 })
     .then((details) => {
       res.json({
-        data: details.length > 0 ? details[0] : {},
+        data: details,
         success: true,
       });
     }).catch((err) => {

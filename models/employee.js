@@ -8,19 +8,19 @@ const employeeSchema = new mongoose.Schema(
     name: {
       type: String,
       trim: true,
-      required: true,
+
       maxlength: 32,
     },
 
     branch: {
       type: ObjectId,
       ref: 'Branch',
-      required: true,
+
     },
     jobTitle: {
       type: ObjectId,
       ref: 'JobTitle',
-      required: true,
+
     },
     mobile: {
       type: String,

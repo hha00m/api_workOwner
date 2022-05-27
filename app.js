@@ -37,6 +37,7 @@ const trackingRoutes = require('./routes/tracking');
 const orderTypeRoutes = require('./routes/orderType');
 const orderRoutes = require('./routes/shipment');
 const ruleRoutes = require('./routes/rule');
+const postRoutes = require('./routes/post');
 const partnerRoutes = require('./routes/partner');
 const websitePageRoutes = require('./routes/websitePage');
 const permissionRoutes = require('./routes/permission');
@@ -45,6 +46,7 @@ const moneyStatusRoutes = require('./routes/moneyStatus');
 const attNRoutes = require('./routes/2_attributeName');
 const attCRoutes = require('./routes/2_AttributeConfiguration');
 const config = require('./routes/websiteConfig');
+const monitor = require('./routes/monitor');
 
 // app
 const app = express();
@@ -108,6 +110,8 @@ app.use('/api', deliveryPriceForCompanyRoutes);
 app.use('/api', attCRoutes);
 app.use('/api', attNRoutes);
 app.use('/api', config);
+app.use('/api', postRoutes);
+app.use('/api', monitor);
 app.use('/pdf', express.static(__dirname + '/pathToPDF'));
 const port = process.env.PORT || 8050;
 

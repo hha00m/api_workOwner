@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Schema;
-const JobTitle = './jobTitle.js'
-const Employee = './employee.js'
+const JobTitle = require('./jobTitle');
+const Employee = require('./employee');
+const PostComment = require('./postCommnet');
 
 const postSchema = new mongoose.Schema(
   {
-    postText: {
+    content: {
       type: String,
       maxlength: 250,
     },
@@ -19,7 +19,7 @@ const postSchema = new mongoose.Schema(
     mobile: {
       type: String,
       trim: true,
-      maxlength: 11,
+      maxlength: 12,
       minlength: 10,
     },
     importance: {
@@ -34,14 +34,22 @@ const postSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    group: [JobTitle.Schema],
-    employees: [Employee.Schema],
-
+    postGroup: JobTitle.schema,
+    employee: Employee.schema,
+    comments: [PostComment.schema],
     imgPath: {
       type: String,
       maxlength: 200,
     },
-
+    creater: Employee.schema,
+    like: {
+      type: Number,
+      default: 0,
+    },
+    dislike: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );
