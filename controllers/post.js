@@ -1,21 +1,21 @@
-const Branch = require('../models/post');
+const Post = require('../models/post');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
 
-exports.branchById = (req, res, next, id) => {
-  Branch.findById(id).exec((err, branch) => {
-    if (err || !branch) {
+exports.postById = (req, res, next, id) => {
+  Post.findById(id).exec((err, post) => {
+    if (err || !post) {
       return res.status(400).json({
-        error: 'branch not found',
+        error: 'post not found',
       });
     }
-    console.log('branch found ...');
-    req.branch = branch;
+    console.log('post found ...');
+    req.post = post;
     next();
   });
 };
 exports.update = (req, res) => {
-  Branch.update({ _id: req.body.id }, {
+  Post.update({ _id: req.body.id }, {
     $set: {
       content: req.body.content,
       shipment_no: req.body.shipment_no,
@@ -35,7 +35,7 @@ exports.update = (req, res) => {
     })
 };
 exports.create = (req, res) => {
-  const post = {
+  const postNew = {
     content: req.body.data.content,
     shipment_no: req.body.data.shipment_no,
     statment_no: req.body.data.statment_no,
@@ -48,8 +48,8 @@ exports.create = (req, res) => {
     imgPath: req.body.data.imgPath,
     creater: req.body.currentUser
   }
-  const branch = new Branch(post);
-  branch.save((err, data) => {
+  const post = new Post(postNew);
+  post.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -59,7 +59,7 @@ exports.create = (req, res) => {
   });
 };
 exports.remove = (req, res) => {
-  Branch.deleteOne({ _id: req.body.key[0] }).then((result) => {
+  Post.deleteOne({ _id: req.body.key[0] }).then((result) => {
     res.json({
       message: 'websiteConfig deleted successfully',
     });
@@ -69,10 +69,33 @@ exports.remove = (req, res) => {
     });
   })
 };
-exports.list = (req, res) => {
+const prepareQuery = (shipment_no, statment_no, mobile,
+  importance, open, urgent, postGroup, employee,
+  imgPath, creater, createdAt
+) => {
+  let query = {};
+  shipment_no ? query['shipment_no'] = shipment_no : '';
+  statment_no ? query['statment_no'] = statment_no : '';
+  mobile ? query['mobile'] = mobile : '';
+  importance ? importance === 'true' ? query['importance'] = importance : '' : '';
+  open ? query['open'] = open : '';
+  urgent ? urgent === 'true' ? query['urgent'] = urgent : '' : "";
+  imgPath ? query['imgPath'] = imgPath : '';
+  // employee ? query['employee._id'] = employee.value : '';
+  // postGroup ? query['postGroup._id'] = postGroup.value : '';
+  creater ? query['creater._id'] = creater : '';
+  createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
+  return query;
+}
 
-  Branch
-    .find()
+exports.list = (req, res) => {
+  const query = prepareQuery(req?.query?.shipment_no, req?.query?.statment_no,
+    req?.query?.mobile, req?.query?.importance, req?.query?.open,
+    req?.query?.urgent, req?.query?.postGroup, req?.query?.employee, req?.query?.imgPath,
+    req?.query?.creater, req?.query?.createdAt);
+
+  Post
+    .find(query)
     .sort({ leader: 1 })
     .then((details) => {
       res.json({
@@ -82,7 +105,7 @@ exports.list = (req, res) => {
     }).catch((err) => {
       return res.status(400).json({
         success: false,
-        error: 'Town not found',
+        error: 'posts not found',
       })
     })
 

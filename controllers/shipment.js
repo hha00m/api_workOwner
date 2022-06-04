@@ -190,8 +190,8 @@ const prepareQuery = (shipment_no, customerMobile, toGovernment,
 
 }
 exports.list = (req, res) => {
-  const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
-  const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+  // const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+  // const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
   const query = prepareQuery(req?.query?.shipment_no, req?.query?.customerMobile,
     req?.query?.toGovernment, req?.query?.clientStatus, req?.query?.driverStatus,
@@ -207,8 +207,8 @@ exports.list = (req, res) => {
       res.json({
         data: shipments,
         success: true,
-        current,
-        pageSize,
+        // current,
+        // pageSize,
         total: shipments.length,
       });
     }).catch((err) => {

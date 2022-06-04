@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
-const { create, branchById, remove, update, list } = require('../controllers/post');
+const { create, postById, remove, update, list } = require('../controllers/post');
 const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
@@ -14,6 +14,6 @@ router.delete("/post/delete", remove);
 router.get('/posts/', list);
 //-------------params----------------------
 router.param('userId', userById);
-router.param('postId', branchById);
+router.param('postId', postById);
 //---------------Export the module---------
 module.exports = router;
