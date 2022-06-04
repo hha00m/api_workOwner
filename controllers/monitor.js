@@ -44,7 +44,7 @@ const prepareQuery = (shipment_no, customerMobile, toGovernment,
   clientInvoice ? query['clientInvoice.invoiceNumber'] = clientInvoice : '';
   branchInvoice ? query['branchInvoice.invoiceNumber'] = branchInvoice : '';
   driverInvoice ? query['driverInvoice.invoiceNumber'] = driverInvoice : '';
-  createdAt ? query['createdAt'] = { $gte: new Date(createdAt[0]), $lt: new Date(createdAt[1]) } : '';
+  createdAt ? query['createdAt'] = { graterThan: new Date(createdAt[0]), lessThan: new Date(createdAt[1]) } : '';
   return query;
 }
 exports.list = (req, res) => {
@@ -84,7 +84,7 @@ resultsWithPromises = (query, res) => {
   var today = new Date();
   // var queriedDate=new Date()
 
-  const firstBlock = new Promise((resolve, reject) => {
+  const todayBlock = new Promise((resolve, reject) => {
 
     Shipment
       .aggregate([
@@ -107,7 +107,7 @@ resultsWithPromises = (query, res) => {
           totalDelivery = totalDelivery + shipment.totalDelivery;
         })
         resolve({
-          first: {
+          todayBlock: {
             data: shipments,
             totalAmount,
             totalCount,
@@ -120,11 +120,16 @@ resultsWithPromises = (query, res) => {
 
       })
   });
-  const secondBlock = new Promise((resolve, reject) => {
+  const driversBlock = new Promise((resolve, reject) => {
     Shipment
-      // driverInvoice: { $exist: false }
+      // 
       .aggregate([
-        { $match: query },
+        {
+          $match: {
+            driverInvoice: { $eq: null },
+            createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
+          }
+        },
         {
           $group: {
             _id: "$clientStatus.name",
@@ -141,7 +146,7 @@ resultsWithPromises = (query, res) => {
           totalCount = totalCount + shipment.count;
         })
         resolve({
-          second: {
+          driversBlock: {
             data: shipments,
             totalAmount,
             totalCount,
@@ -152,11 +157,16 @@ resultsWithPromises = (query, res) => {
         reject(new Error('second error'));
       })
   });
-  const thirdBlock = new Promise((resolve, reject) => {
+  const branchsBlock = new Promise((resolve, reject) => {
     Shipment
-      // clientInvoice: { $exist: false },
+      // 
       .aggregate([
-        { $match: query },
+        {
+          $match: {
+            branchInvoice: { $eq: null },
+            createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
+          }
+        },
         {
           $group: {
             _id: "$clientStatus.name",
@@ -173,7 +183,7 @@ resultsWithPromises = (query, res) => {
           totalCount = totalCount + shipment.count;
         })
         resolve({
-          third: {
+          branchsBlock: {
             data: shipments,
             totalAmount,
             totalCount,
@@ -182,13 +192,17 @@ resultsWithPromises = (query, res) => {
           }
         })
         reject(new Error('third error'));
-
       })
   });
-  const fourthBlock = new Promise((resolve, reject) => {
+  const companyBlock = new Promise((resolve, reject) => {
     Shipment
       .aggregate([
-        { $match: query },
+        {
+          $match: {
+            clientInvoice: { $eq: null },
+            createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
+          }
+        },
         {
           $group: {
             _id: "$clientStatus.name",
@@ -205,7 +219,7 @@ resultsWithPromises = (query, res) => {
           totalCount = totalCount + shipment.count;
         })
         resolve({
-          fourth: {
+          companyBlock: {
             data: shipments,
             totalAmount,
             totalCount,
@@ -217,10 +231,15 @@ resultsWithPromises = (query, res) => {
 
       })
   });
+
   const driverRankBest = new Promise((resolve, reject) => {
     Shipment
       .aggregate([
-        { $match: query },
+        {
+          $match: {
+            createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
+          }
+        },
         {
           $group: {
             _id: "$driver.name",
@@ -245,7 +264,11 @@ resultsWithPromises = (query, res) => {
   const driverRankWorst = new Promise((resolve, reject) => {
     Shipment
       .aggregate([
-        { $match: query },
+        {
+          $match: {
+            createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
+          }
+        },
         {
           $group: {
             _id: "$driver.name",
@@ -272,8 +295,11 @@ resultsWithPromises = (query, res) => {
   const branchRankBest = new Promise((resolve, reject) => {
     Shipment
       .aggregate([
-        { $match: query },
         {
+          $match: {
+            createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
+          }
+        }, {
           $group: {
             _id: "$toBranch.name",
             count: { $sum: 1 }
@@ -297,8 +323,11 @@ resultsWithPromises = (query, res) => {
   const branchRankWorst = new Promise((resolve, reject) => {
     Shipment
       .aggregate([
-        { $match: query },
         {
+          $match: {
+            createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
+          }
+        }, {
           $group: {
             _id: "$toBranch.name",
             count: { $sum: 1 }
@@ -321,7 +350,7 @@ resultsWithPromises = (query, res) => {
   });
 
 
-  Promise.all([firstBlock, secondBlock, thirdBlock, fourthBlock, driverRankBest, driverRankWorst, branchRankBest, branchRankWorst]).then(values => {
+  Promise.all([todayBlock, driversBlock, branchsBlock, companyBlock, driverRankBest, driverRankWorst, branchRankBest, branchRankWorst]).then(values => {
     res.json({
       data: values,
       success: true
