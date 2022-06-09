@@ -1,6 +1,9 @@
 const _ = require('lodash');
 const Town = require('../models/town');
 const { errorHandler } = require('../helpers/dbErrorHandler');
+const mongoose = require('mongoose');
+const { branchById } = require('./branch');
+// const { ObjectId } = mongoose.Schema;
 
 exports.townById = (req, res, next, id) => {
   Town.findById(id).exec((err, town) => {
@@ -61,23 +64,44 @@ exports.update = (req, res) => {
 
 };
 
-/**
- *  /api/towns?current=1&pageSize=20&sorter=
- *
- *
-    let order = req.query.order ? req.query.order : "asc";
- * let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
- * let limit = req.query.limit ? parseInt(req.query.limit) : 6;
- */
+
+const prepareQuery = (
+  name,
+  government,
+  price,
+  note,
+  driver,
+  center,
+  allocated,
+  createdAt
+) => {
+  let query = {};
+  name ? query['name'] = name : '';
+  government ? query['government'] = mongoose.Types.ObjectId(government) : '';
+  price ? query['price'] = price : '';
+  note ? query['note'] = note : '';
+  driver ? query['driver._id'] = driver : '';
+  center ? query['center'] = center : '';
+  allocated ? query['allocated'] = allocated : '';
+  createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
+  return query;
+}
 
 exports.list = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const q = req.query.name ? { $text: { $search: req.query.name } } :
-    req.query.note ? { $text: { $search: req.query.note } } : req.query.government ? { $text: { $search: req.query.government } } : {}
+  const query = prepareQuery(
+    req?.query?.name,
+    req?.query?.government,
+    req?.query?.price,
+    req?.query?.note,
+    req?.query?.driver,
+    req?.query?.center,
+    req?.query?.allocated,
+    req?.query?.createdAt);
 
   Town
-    .find(q)
+    .find(query)
     .populate('government', 'name _id')
     .populate('driver', 'name _id')
     // .skip(pageSize * current)
@@ -127,32 +151,38 @@ exports.townsByGovernment = (req, res) => {
     })
 
 };
+// mongoose.Types.ObjectId(branchss)
 exports.townsNotAlocated = (req, res) => {
-  try {
-    Town
-      .find({ allocated: null })
-      .populate('government', 'name _id')
-      .populate('driver', 'name _id')
-      // .skip(pageSize * current)
-      // .limit(pageSize)
-      .sort({ name: 1 })
-      .then((towns) => {
-        res.json({
-          data: towns,
-          success: true,
-          total: towns.length,
-        });
-      }).catch((err) => {
-        return res.status(400).json({
-          success: false,
-          error: 'Town not found',
+  branchById(req.query.branch).then((gover) => {
+    try {
+      Town
+        .find({
+          $or: [{ allocated: false }, { allocated: null }],
+          government: gover.government._id
         })
+        .populate('government', 'name _id')
+        .populate('driver', 'name _id')
+        // .skip(pageSize * current)
+        // .limit(pageSize)
+        .sort({ name: 1 })
+        .then((towns) => {
+          res.json({
+            data: towns,
+            success: true,
+            total: towns.length,
+          });
+        }).catch((err) => {
+          return res.status(400).json({
+            success: false,
+            error: 'Town not found',
+          })
+        })
+    }
+    catch (err) {
+      return res.status(400).json({
+        success: false,
+        error: 'Towns not found',
       })
-  }
-  catch (err) {
-    return res.status(400).json({
-      success: false,
-      error: 'Towns not found',
-    })
-  }
+    }
+  })
 };

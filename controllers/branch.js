@@ -3,18 +3,9 @@ const _ = require('lodash');
 const fs = require('fs');
 const Branch = require('../models/branch');
 const { errorHandler } = require('../helpers/dbErrorHandler');
-exports.branchById = (req, res, next, id) => {
-  Branch.findById(id).exec((err, branch) => {
-    if (err || !branch) {
-      return res.status(400).json({
-        error: 'branch not found',
-      });
-    }
-    console.log('branch found ...');
-    req.branch = branch;
-    next();
-  });
-};
+exports.branchById = (id) => {
+  return Branch.findById(id)
+}
 
 exports.read = (req, res) => {
   req.branch.photo = undefined;

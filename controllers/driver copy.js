@@ -1,7 +1,6 @@
 const Driver = require('../models/driver');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 const Town = require('../models/town');
-const { default: mongoose } = require('mongoose');
 
 exports.driverById = (req, res, next, id) => {
   try {
@@ -33,7 +32,7 @@ exports.create = (req, res) => {
       price = {
         town: town,
         urbanPrice: req.body?.urbanPrice,
-        ruralPrice: req.body?.urbanPrice,
+        ruralPrice: req.body?.ruralPrice,
       }
       townPrice.push(price);
     })
@@ -76,28 +75,6 @@ exports.removeDriverFromTown = (req, res) => {
     });
   }
 };
-exports.removeDriverFromAllTown = (req, res) => {
-  try {
-    Town.updateMany({ driver: mongoose.Types.ObjectId(req.body.id) }, {
-      $unset: {
-        allocated: false,
-        driver: req.body.id
-      },
-    }).then((result) => {
-      res.json({
-        message: 'driver removed from town successfully',
-      });
-    }).catch((err) => {
-      return res.status(400).json({
-        error: errorHandler(err),
-      });
-    })
-  } catch (err) {
-    return res.status(400).json({
-      error: errorHandler(err),
-    });
-  }
-};
 exports.remove = (req, res) => {
   try {
     Driver.deleteOne({ _id: req.body.key })
@@ -118,90 +95,64 @@ exports.remove = (req, res) => {
     });
   }
 };
-exports.update = (req, res) => {
+const updateDriverInfo = (req) => {
   try {
     Driver.update({ _id: req.body.id }, {
       $set: {
         name: req.body.name, address: req.body.address,
         mobile: req.body.mobile, note: req.body.note,
-        brunch: req.body.brunch,
+        branch: req.body.branch,
         active: req.body.active,
         ruralPrice: req.body.ruralPrice,
         urbanPrice: req.body.urbanPrice,
       },
-    }).then((result) => {
-      res.json({
-        result,
-        success: true,
-      })
     })
-      .catch((err) => {
-        return res.status(400).json({ error: errorHandler(err) })
-      })
+  } catch (err) {
+    return false;
   }
-  catch (err) {
-    return res.status(400).json({
-      error: errorHandler(err),
-    });
-  }
+  return true
 };
-exports.updateTownsPrice = (req, res) => {
-  try {
-    Town.updateMany({ driver: mongoose.Types.ObjectId(req.body.id), center: req.body.center }, {
-      $set: {
-        price: req.body.center ? req.body.urbanPrice : req.body.ruralPrice
-      },
+const updateTownsPriceForDriver = async (req) => {
+  const ids = req.body?.townsIds
+  if (ids?.length > 0) {
+    await ids.forEach(townId => {
+      Town.update({ _id: townId.id }, {
+        $set: {
+          price: townId?.center === 'true' ? req.body?.urbanPrice : req.body?.ruralPrice,
+        }
+      }).catch((err) => {
+        return false;
+      }
+      )
     })
-      .then((result) => {
-        res.json({
-          result,
-          success: true,
-        })
-      })
-      .catch((err) => {
-        return res.status(400).json({ error: errorHandler(err) })
-      })
+    return true
   }
-  catch (err) {
-    return res.status(400).json({
-      error: errorHandler(err),
-    });
-  }
-};
-
-const prepareQuery = (
-  name,
-  branch,
-  urbanPrice,
-  ruralPrice,
-  mobile,
-  createdAt
-) => {
-  let query = {};
-  name ? query['name'] = name : '';
-  branch ? query['branch'] = mongoose.Types.ObjectId(branch) : '';
-  urbanPrice ? query['urbanPrice'] = urbanPrice : '';
-  ruralPrice ? query['ruralPrice'] = ruralPrice : '';
-  mobile ? query['mobile'] = mobile : '';
-  createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
-  return query;
 }
+exports.update = async (req, res) => {
+  const info = await updateDriverInfo(req)
+  // const townsPrice = await updateTownsPriceForDriver(req)
+  // if (info && townsPrice) {
+  if (info) {
+    res.json({
+      message: 'Driver updated successfully',
+      success: true,
+    });
+  } else {
+    res.json({
+      message: 'Driver updated unsuccessfully',
+      success: false,
+    });
+  }
+
+
+};
 exports.list = (req, res) => {
 
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-
-  const query = prepareQuery(
-    req?.query?.name,
-    req?.query?.branch,
-    req?.query?.urbanPrice,
-    req?.query?.ruralPrice,
-    req?.query?.mobile,
-    req?.query?.createdAt);
-
   try {
     Driver
-      .find(query)
+      .find()
       .populate('branch', 'name _id')
       // .skip(pageSize * current)
       // .limit(pageSize)
@@ -271,6 +222,7 @@ exports.listPrices = (req, res) => {
     })
   }
 }
+// error need to check again
 exports.listStores = (req, res) => {
 
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
