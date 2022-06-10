@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Employee = require('../models/employee');
 const { errorHandler } = require('../helpers/dbErrorHandler');
+const { default: mongoose } = require('mongoose');
 
 exports.employeeById = (req, res, next, id) => {
   Employee.findById(id).exec((err, employee) => {
@@ -14,12 +15,10 @@ exports.employeeById = (req, res, next, id) => {
     next();
   });
 };
-
 exports.read = (req, res) => {
   req.employee.photo = undefined;
   return res.json(req.employee);
 };
-
 exports.create = (req, res) => {
   const employee = new Employee(req.body);
   employee.save((err, data) => {
@@ -56,15 +55,34 @@ exports.update = (req, res) => {
     })
 };
 
-
+const prepareQuery = (
+  name,
+  branch,
+  jobTitle,
+  mobile,
+  createdAt
+) => {
+  let query = {};
+  name ? query['name'] = name : '';
+  branch ? query['branch'] = mongoose.Types.ObjectId(branch) : '';
+  jobTitle ? query['jobTitle'] = mongoose.Types.ObjectId(jobTitle) : '';
+  mobile ? query['mobile'] = mobile : '';
+  createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
+  return query;
+}
 exports.list = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const q = req.query.name ? { $text: { $search: req.query.name } } :
-    req.query.note ? { $text: { $search: req.query.note } } : req.query.government ? { $text: { $search: req.query.government } } : {}
+  const query = prepareQuery(
+    req?.query?.name,
+    req?.query?.branch,
+    req?.query?.jobTitle,
+    req?.query?.mobile,
+    req?.query?.createdAt);
+
 
   Employee
-    .find(q)
+    .find(query)
     .populate('jobTitle', 'name _id')
     .populate('branch', 'name _id')
     // .skip(pageSize * current)

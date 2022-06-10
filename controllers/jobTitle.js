@@ -97,9 +97,13 @@ exports.listPages = (req, res) => {
     })
 
 };
+
+
 exports.listJobTitles = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+
+
 
   JobTitle
     .find()
