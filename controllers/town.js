@@ -35,15 +35,18 @@ exports.create = (req, res) => {
   });
 };
 exports.remove = (req, res) => {
-  Town.deleteOne({ _id: req.body.key[0] }).then((result) => {
-    res.json({
-      message: 'town deleted successfully',
-    });
-  }).catch((err) => {
-    return res.status(400).json({
-      error: errorHandler(err),
-    });
-  })
+  Town.deleteMany({ '_id': { '$in': req.body.keys } })
+    .then((result) => {
+      res.json({
+        success: true,
+        message: 'store deleted successfully',
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        error: errorHandler(err),
+        success: false,
+      });
+    })
 };
 exports.update = (req, res) => {
   Town.update({ _id: req.body.id }, {

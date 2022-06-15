@@ -25,6 +25,10 @@ const employeeSchema = new mongoose.Schema(
     mobile: {
       type: String,
     },
+    salary: {
+      type: Number,
+      default: 0,
+    },
     note: {
       type: String,
       maxlength: 200,

@@ -1,10 +1,6 @@
-const formidable = require('formidable');
-const _ = require('lodash');
-const fs = require('fs');
 const Client = require('../models/client');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Schema;
 
 const Store = require('../models/store');
 exports.clientById = (id) => {
@@ -20,12 +16,10 @@ exports.clientById = (id) => {
     return {}
   };
 }
-
 exports.read = (req, res) => {
   req.client.photo = undefined;
   return res.json(req.client);
 };
-
 exports.create = (req, res) => {
   const client = new Client(req.body);
   let governPrice = [];
@@ -61,16 +55,16 @@ exports.create = (req, res) => {
   });
 };
 exports.remove = (req, res) => {
-  Client.deleteOne({ _id: req.body.key })
+  Client.deleteMany({ '_id': { '$in': req.body.keys } })
     .then((result) => {
       res.json({
-        message: 'Client deleted successfully',
         success: true,
-
+        message: 'store deleted successfully',
       });
     }).catch((err) => {
       return res.status(400).json({
         error: errorHandler(err),
+        success: false,
       });
     })
 };
@@ -92,13 +86,31 @@ exports.update = (req, res) => {
     })
 };
 
+const prepareQuery = (
+  name,
+  branch,
+  mobile,
+  createdAt
+) => {
+  let query = {};
+  name ? query['name'] = name : '';
+  branch ? query['branch'] = mongoose.Types.ObjectId(branch) : '';
+  mobile ? query['mobile'] = mobile : '';
+  createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
+  return query;
+}
 exports.list = (req, res) => {
 
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+  const query = prepareQuery(
+    req?.query?.name,
+    req?.query?.branch,
+    req?.query?.mobile,
+    req?.query?.createdAt);
 
   Client
-    .find()
+    .find(query)
     .populate('branch', 'name _id')
     // .skip(pageSize * current)
     // .limit(pageSize)
@@ -161,7 +173,9 @@ exports.listStores = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
   try {
-    // 
+
+
+
     Store
       .find({ 'client._id': req.query.id })
       // .skip(pageSize * current)

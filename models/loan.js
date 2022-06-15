@@ -3,9 +3,14 @@ const Client = require("./client");
 
 const LoanSchema = new mongoose.Schema(
     {
-        client: Client.schema,
-        name: {
+        amount: {
             type: Number,
+        },
+        client: Client.schema,
+
+        isLoan: {
+            type: Boolean,
+            default: true,
         },
         note: {
             type: String,

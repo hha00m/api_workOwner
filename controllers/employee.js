@@ -31,15 +31,18 @@ exports.create = (req, res) => {
   });
 };
 exports.remove = (req, res) => {
-  Employee.deleteOne({ _id: req.body.key[0] }).then((result) => {
-    res.json({
-      message: 'employee deleted successfully',
-    });
-  }).catch((err) => {
-    return res.status(400).json({
-      error: errorHandler(err),
-    });
-  })
+  Employee.deleteMany({ '_id': { '$in': req.body.keys } })
+    .then((result) => {
+      res.json({
+        success: true,
+        message: 'store deleted successfully',
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        error: errorHandler(err),
+        success: false,
+      });
+    })
 };
 exports.update = (req, res) => {
   Employee.update({ _id: req.body.id }, {
@@ -47,6 +50,7 @@ exports.update = (req, res) => {
       name: req.body.name,
       note: req.body.note,
       government: req.body.government,
+      salary: req.body.salary,
       center: req.body.center
     },
   }).then((result) => { res.json(result) })
@@ -60,6 +64,7 @@ const prepareQuery = (
   branch,
   jobTitle,
   mobile,
+  salary,
   createdAt
 ) => {
   let query = {};
@@ -67,6 +72,7 @@ const prepareQuery = (
   branch ? query['branch'] = mongoose.Types.ObjectId(branch) : '';
   jobTitle ? query['jobTitle'] = mongoose.Types.ObjectId(jobTitle) : '';
   mobile ? query['mobile'] = mobile : '';
+  salary ? query['salary'] = salary : '';
   createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
   return query;
 }
@@ -78,6 +84,7 @@ exports.list = (req, res) => {
     req?.query?.branch,
     req?.query?.jobTitle,
     req?.query?.mobile,
+    req?.query?.salary,
     req?.query?.createdAt);
 
 

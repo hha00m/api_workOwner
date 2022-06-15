@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const Store = require('../models/store');
+const Client = require('../models/client');
 const { errorHandler } = require('../helpers/dbErrorHandler');
+const { default: mongoose } = require('mongoose');
 
 exports.storeById = (req, res, next, id) => {
   Store.findById(id).exec((err, store) => {
@@ -20,29 +22,36 @@ exports.read = (req, res) => {
   return res.json(req.store);
 };
 
-exports.create = (req, res) => {
-  const s = { name: req.body.name, note: req.body.note, client: req.body.clientObj.obj }
-  const store = new Store(s);
+exports.create = async (req, res) => {
+  const client = await Client.findById(mongoose.Types.ObjectId(req.body.client));
+  const store = new Store({
+    name: req.body.name,
+    note: req.body.note,
+    client: client
+  });
   store.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
+        success: false,
       });
     }
     res.json({ success: true, data });
   });
 };
 exports.remove = (req, res) => {
-  Store.deleteOne({ _id: req.body.key[0] }).then((result) => {
-    res.json({
-      success: true,
-      message: 'store deleted successfully',
-    });
-  }).catch((err) => {
-    return res.status(400).json({
-      error: errorHandler(err),
-    });
-  })
+  Store.deleteMany({ '_id': { '$in': req.body.keys } })
+    .then((result) => {
+      res.json({
+        success: true,
+        message: 'store deleted successfully',
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        error: errorHandler(err),
+        success: false,
+      });
+    })
 };
 exports.update = (req, res) => {
   Store.update({ _id: req.body.id }, {
@@ -58,16 +67,27 @@ exports.update = (req, res) => {
 
 
 };
-
+const prepareQuery = (
+  name,
+  client,
+  createdAt
+) => {
+  let query = {};
+  name ? query['name'] = name : '';
+  client ? query['client'] = mongoose.Types.ObjectI(client) : '';
+  createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
+  return query;
+}
 
 exports.list = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const q = req.query.name ? { $text: { $search: req.query.name } } :
-    req.query.note ? { $text: { $search: req.query.note } } : req.query.government ? { $text: { $search: req.query.government } } : {}
-
+  const query = prepareQuery(
+    req?.query?.name,
+    req?.query?.client,
+    req?.query?.createdAt);
   Store
-    .find(q)
+    .find(query)
     .populate('client', 'name _id')
     // .skip(pageSize * current)
     // .limit(pageSize)

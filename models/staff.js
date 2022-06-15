@@ -56,7 +56,7 @@ const staffSchema = new mongoose.Schema(
     enabled: {
       type: Boolean,
       required: true,
-      default:true
+      default: true
     },
     photo: {
       data: Buffer,
@@ -69,6 +69,10 @@ const staffSchema = new mongoose.Schema(
     note: {
       type: String,
       maxlength: 200,
+    },
+    salary: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true },
@@ -85,7 +89,7 @@ staffSchema
     return this._password;
   });
 
-  staffSchema.methods = {
+staffSchema.methods = {
   authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },

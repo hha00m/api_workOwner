@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const Loan = require('../models/loan');
 const { errorHandler } = require('../helpers/dbErrorHandler');
-const { clientById } = require('./client');
+const { default: mongoose } = require('mongoose');
 
 exports.loanById = (req, res, next, id) => {
   Loan.findById(id).exec((err, loan) => {
@@ -22,12 +22,12 @@ exports.read = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  const s = { name: req.body.name, note: req.body.note, client: req.body.clientObj }
-  const loan = new Loan(s);
+  const loan = new Loan({ amount: req.body?.amount, note: req.body?.note, client: req.body?.clientObj, isLoan: req.body?.isLoan });
   loan.save((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
+        success: false
       });
     }
     res.json({ success: true, data });
@@ -48,31 +48,47 @@ exports.remove = (req, res) => {
 exports.update = (req, res) => {
   Loan.update({ _id: req.body.id }, {
     $set: {
-      name: req.body.name,
-      note: req.body.note,
-      client: req.body.client,
+      amount: req.body?.amount,
+      note: req.body?.note,
+      isLoan: req.body?.isLoan,
+      client: req.body?.client,
     },
   }).then((result) => { res.json({ result, success: true }) })
     .catch((err) => {
-      return res.status(400).json({ error: errorHandler(err) })
+      return res.status(400).json({ error: errorHandler(err), success: false })
     })
 
 
 };
 
+const prepareQuery = (
+  amount,
+  client,
+  isLoan,
+  createdAt
+) => {
+  let query = {};
+  amount ? query['amount'] = amount : '';
+  client ? query['client._id'] = (client) : '';
+  isLoan ? query['isLoan'] = isLoan : '';
+  createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
+  return query;
+}
 
 exports.list = (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
   const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
-  const q = req.query.name ? { $text: { $search: req.query.name } } :
-    req.query.note ? { $text: { $search: req.query.note } } : req.query.government ? { $text: { $search: req.query.government } } : {}
-
+  const query = prepareQuery(
+    req?.query?.amount,
+    req?.query?.client,
+    req?.query?.isLoan,
+    req?.query?.createdAt);
   Loan
-    .find(q)
-    .populate('client', 'name _id')
+    .find(query)
+    .populate('client', 'amount _id')
     // .skip(pageSize * current)
     // .limit(pageSize)
-    .sort({ name: 1 })
+    .sort({ amount: 1 })
     .then((loans) => {
       res.json({
         data: loans,
