@@ -16,34 +16,67 @@ exports.loanById = (req, res, next, id) => {
   });
 };
 
-exports.read = (req, res) => {
-  req.loan.photo = undefined;
-  return res.json(req.loan);
-};
+const findBalance = async (cleint) => {
+  try {
+    return await Loan
+      .find({ 'client._id': cleint })
+      .sort({ createdAt: -1 })
+      .then((lo) => {
+        if (lo.length > 0) {
+          return lo[0].balance;
+        }
+        return 0;
+      }).catch((err) => {
+        return 0;
+      })
+  } catch (err) {
+    return 0;
+  }
+}
+const saveData = async (req, res) => {
+  try {
+    const amountMain = (req.body?.isLoan ? (-1 * req.body?.amount) : req.body?.amount);
+    const balance = await findBalance(req.body?.client);
+
+    const loan = new Loan({
+      balance: balance + amountMain,
+      amount: req.body?.amount,
+      note: req.body?.note,
+      client: req.body?.clientObj,
+      isLoan: req.body?.isLoan,
+      creator: req.body?.creator
+    });
+    loan.save((err, data) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler(err),
+          success: false
+        });
+      }
+      res.json({ success: true, data });
+    });
+  } catch (e) {
+    return res.status(400).json({ error: errorHandler(e), success: false })
+  }
+}
+
 
 exports.create = (req, res) => {
-  const loan = new Loan({ amount: req.body?.amount, note: req.body?.note, client: req.body?.clientObj, isLoan: req.body?.isLoan });
-  loan.save((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-        success: false
-      });
-    }
-    res.json({ success: true, data });
-  });
+  saveData(req, res);
 };
 exports.remove = (req, res) => {
-  Loan.deleteOne({ _id: req.body.key[0] }).then((result) => {
-    res.json({
-      success: true,
-      message: 'loan deleted successfully',
-    });
-  }).catch((err) => {
-    return res.status(400).json({
-      error: errorHandler(err),
-    });
-  })
+  Loan.deleteMany({ '_id': { '$in': req.body.keys } })
+    .then((result) => {
+      res.json({
+        success: true,
+        message: 'store deleted successfully',
+      });
+    }).catch((err) => {
+      return res.status(400).json({
+        error: errorHandler(err),
+        success: false,
+      });
+    })
 };
 exports.update = (req, res) => {
   Loan.update({ _id: req.body.id }, {
@@ -71,7 +104,7 @@ const prepareQuery = (
   amount ? query['amount'] = amount : '';
   client ? query['client._id'] = (client) : '';
   isLoan ? query['isLoan'] = isLoan : '';
-  createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
+  createdAt ? query['createdAt'] = { $gte: createdAt } : '';
   return query;
 }
 
@@ -88,7 +121,7 @@ exports.list = (req, res) => {
     .populate('client', 'amount _id')
     // .skip(pageSize * current)
     // .limit(pageSize)
-    .sort({ amount: 1 })
+    .sort({ createdAt: -1 })
     .then((loans) => {
       res.json({
         data: loans,

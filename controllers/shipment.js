@@ -1,8 +1,6 @@
 const _ = require('lodash');
 const Shipment = require('../models/shipment');
 const { errorHandler } = require('../helpers/dbErrorHandler');
-const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Schema;
 
 exports.shipmentById = (req, res, next, id) => {
   Shipment.findById(id).exec((err, shipment) => {
@@ -88,7 +86,7 @@ exports.update = (req, res) => {
         store: req.body.store,
         clientDInvoiceIndex: req.body.clientDInvoiceIndex,
         driverDInvoiceIndex: req.body.driverDInvoiceIndex,
-        branchDInvoiceIndex: req.body.clientDInvoiceIndex,
+        branchDInvoiceIndex: req.body.branchDInvoiceIndex,
 
 
       },
@@ -160,7 +158,7 @@ exports.updateInvoice_branch = (req, res) => {
 const prepareQuery = (shipment_no, customerMobile, toGovernment,
   clientStatus, driverStatus, branchStatus, driver, note, senderBranchPrice,
   clientDeliveryPrice, driverDeliveryPrice, fromBranch, toBranch, toTown, store,
-  clientInvoice, branchInvoice, driverInvoice, createdAt, branchDeliveryPrice, createdBy
+  clientInvoice, branchInvoice, driverInvoice, createdAt, branchDeliveryPrice, createdBy, driverOrdersExist, branchOrdersExist
 ) => {
   let query = {};
 
@@ -169,7 +167,9 @@ const prepareQuery = (shipment_no, customerMobile, toGovernment,
   toGovernment ? query['toGovernment._id'] = toGovernment : '';
   clientStatus ? query['clientStatus._id'] = { "$in": clientStatus } : '';
   driverStatus ? query['driverStatus._id'] = { "$in": driverStatus } : '';
+  driverOrdersExist ? query['driverInvoice'] = { $eq: null } : '';
   branchStatus ? query['branchStatus._id'] = { "$in": branchStatus } : '';
+  branchOrdersExist ? query['branchInvoice'] = { $eq: null } : '';
   driver ? query['driver._id'] = driver : '';
   note ? query['note'] = note : '';
   senderBranchPrice ? query['senderBranchPrice'] = senderBranchPrice : '';
@@ -186,29 +186,141 @@ const prepareQuery = (shipment_no, customerMobile, toGovernment,
   driverInvoice ? query['driverInvoice.invoiceNumber'] = driverInvoice : '';
   createdAt ? query['createdAt'] = { $gte: (createdAt[0]), $lt: (createdAt[1]) } : '';
   return query;
+}
+const prepareSorter = (sorter) => {
+  let query = {};
+  const index = sorter?.split(':')[0]
+  const undefinedCheck = sorter?.split(':')[1]
+  if (undefinedCheck === 'undefined' || !sorter) {
+    query['createdAt'] = -1
+  } else {
+    switch (index) {
+      case 'createdAt':
+        query['createdAt'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'shipment_no':
+        query['shipment_no'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'customerMobile':
+        query['customerMobile'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'toGovernment':
+        query['toGovernment.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'clientStatus':
+        query['clientStatus.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'driverStatus':
+        query['driverStatus.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'branchStatus':
+        query['branchStatus.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'driver':
+        query['driver.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'note':
+        query['note'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'senderBranchPrice':
+        query['senderBranchPrice'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'clientDeliveryPrice':
+        query['clientDeliveryPrice'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'driverDeliveryPrice':
+        query['driverDeliveryPrice'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'branchDeliveryPrice':
+        query['branchDeliveryPrice'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'fromBranch':
+        query['fromBranch.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'toBranch':
+        query['toBranch.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'toTown':
+        query['toTown.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'store':
+        query['store.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'createdBy':
+        query['createdBy.name'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'clientInvoice':
+        query['clientInvoice.invoiceNumber'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'branchInvoice':
+        query['branchInvoice.invoiceNumber'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'driverInvoice':
+        query['driverInvoice.invoiceNumber'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'clientDInvoiceIndex':
+        query['clientDInvoiceIndex'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'branchDInvoiceIndex':
+        query['branchDInvoiceIndex'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
+      case 'driverDInvoiceIndex':
+        query['driverDInvoiceIndex'] = undefinedCheck === 'ascend' ? 1 : -1
+        break;
 
+      default:
+        query['createdAt'] = -1
+    }
+    // const value = undefinedCheck == 'ascend' ? 1 : -1
+    // query[index] = value;
+  }
+  return query;
 
 }
 exports.list = (req, res) => {
-  // const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
-  // const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
+  const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 20; //page size which is limeit
+  const current = (req.query.current ? parseInt(req.query.current) : 1) - 1; // return currnet page else 0
 
   const query = prepareQuery(req?.query?.shipment_no, req?.query?.customerMobile,
     req?.query?.toGovernment, req?.query?.clientStatus, req?.query?.driverStatus,
     req?.query?.branchStatus, req?.query?.driver, req?.query?.note, req?.query?.senderBranchPrice,
-    req?.query?.clientDeliveryPrice, req?.query?.driverDeliveryPrice, req?.query?.fromBranch, req?.query?.toBranch,
-    req?.query?.toTown, req?.query?.store, req?.query?.clientInvoice, req?.query?.branchInvoice,
-    req?.query?.driverInvoice, req?.query?.createdAt, req?.query?.branchDeliveryPrice, req?.query?.createdBy);
-
+    req?.query?.clientDeliveryPrice, req?.query?.driverDeliveryPrice, req?.query?.fromBranch,
+    req?.query?.toBranch, req?.query?.toTown, req?.query?.store, req?.query?.clientInvoice,
+    req?.query?.branchInvoice, req?.query?.driverInvoice, req?.query?.createdAt,
+    req?.query?.branchDeliveryPrice, req?.query?.createdBy,
+    req?.query?.driverOrdersExist, req?.query?.branchOrdersExist);
+  const sorter = prepareSorter(req?.query?.sorter);
   Shipment
     .find(query)
-    .sort({ name: 1 })
+    .sort(sorter)
+    .skip(pageSize * current)
+    .limit(pageSize)
     .then((shipments) => {
+
+      // let total = 0, total_ToDriver = 0, total_ToBranch = 0, total_ToCompany = 0, total_senderBranch = 0;
+      // shipments.forEach(shipment => {
+      //   total += shipment.newPrice;
+      //   total_ToDriver += shipment.driverDeliveryPrice;
+      //   total_ToBranch += shipment.branchDeliveryPrice;
+      //   total_ToCompany += shipment.clientDeliveryPrice;
+      //   total_senderBranch += shipment.senderBranchPrice;
+      // });
+
+
+      // const results = {
+      //   total: total,
+      //   total_ToDriver: total_ToDriver,
+      //   total_ToBranch: total_ToBranch,
+      //   total_ToCompany: total_ToCompany,
+      //   total_senderBranch: total_senderBranch,
+      // };
+
       res.json({
         data: shipments,
+        // results: results,
         success: true,
-        // current,
-        // pageSize,
+        current,
+        pageSize,
         total: shipments.length,
       });
     }).catch((err) => {

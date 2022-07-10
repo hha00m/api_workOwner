@@ -75,6 +75,7 @@ exports.update = (req, res) => {
       mobile: req.body.mobile, note: req.body.note,
       brunch: req.body.brunch,
       visbalData: req.body.visbalData,
+      deliveryPrice: req.body.deliveryPrice
     },
   }).then((result) => {
     res.json({
@@ -85,6 +86,8 @@ exports.update = (req, res) => {
       return res.status(400).json({ error: errorHandler(err) })
     })
 };
+
+
 
 const prepareQuery = (
   name,

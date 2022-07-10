@@ -500,16 +500,16 @@ resultsWithPromisesDrivers = (query, res) => {
         {
           $match: {
             driverInvoice: { $eq: null },
+            'clientStatus.name': { $eq: 'مع المندوب' },
             // createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
           }
         },
         {
           $group: {
             _id: {
-              driver: "$driver.name",
+              driver: "$driver._id",
               clientStatus: "$clientStatus.name",
             },
-
             totalAmount: { $sum: "$newPrice" },
             shipments: { $sum: 1 }
           }
@@ -629,13 +629,14 @@ resultsWithPromisesBranchs = (query, res) => {
         {
           $match: {
             branchInvoice: { $eq: null },
+            'clientStatus.name': { $eq: 'مع المندوب' },
             // createdAt: { $gte: query.createdAt.graterThan, $lt: query.createdAt.lessThan }
           }
         },
         {
           $group: {
             _id: {
-              branch: "$toBranch.name",
+              branch: "$toBranch._id",
               clientStatus: "$clientStatus.name",
             },
 

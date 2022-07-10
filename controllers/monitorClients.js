@@ -16,7 +16,6 @@ exports.shipmentById = (req, res, next, id) => {
     next();
   });
 };
-
 const prepareQueryClients = (client, government,
   createdAt
 ) => {

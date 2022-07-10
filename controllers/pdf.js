@@ -2,7 +2,26 @@ const fs = require("fs");
 const puppeteer = require("puppeteer");
 const fse = require("fs-extra");
 const hbs = require("handlebars");
-const data = require('./pdf/data.json');
+
+
+exports.readimg = (req, res) => {
+    try {
+        // var filePath = req?.query?.path;
+        const fullPath = __dirname + "/../document.jpg";
+        fs.readFile(fullPath, function (err, data) {
+            // console.log(data)
+            // res.contentType("application/img");
+            // return res.send(data);
+            res.send(data);
+        });
+    } catch (err) {
+        res.status(400).json({
+            error: err,
+            success: false,
+        });
+    }
+};
+
 
 exports.readpdf = (req, res) => {
     try {

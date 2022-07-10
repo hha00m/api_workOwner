@@ -37,7 +37,7 @@ const invoiceSchema = new mongoose.Schema(
     numberOfShipments: {
       type: Number,
     },
-    // employee: Employee.schema,
+    employee: Employee.schema,
 
   },
   { timestamps: true },
