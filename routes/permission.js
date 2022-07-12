@@ -3,18 +3,17 @@ const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
 const { create, permissionById, read, remove, update, list } = require('../controllers/permission');
-const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const isLogined = require('../middleware/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-// router.post("/town/create/:userId", requireSignin, isAuth, isAdmin, create);
-router.post('/permission/create/', create);
-router.get('/permission/:permissionId', read);
-router.put('/permission/update/:permissionId',   update);
-router.delete('/permission/:permissionId', remove);
+router.post('/permission/create/', isLogined, create);
+router.get('/permission/:permissionId', isLogined, read);
+router.put('/permission/update/:permissionId', isLogined, update);
+router.delete('/permission/:permissionId', isLogined, remove);
 //-------------list------------------------
-router.get('/permissions/', list);
- //-------------params----------------------
-router.param('userId', userById);
-router.param('permissionId', permissionById);
+router.get('/permissions/', isLogined, list);
+//-------------params----------------------
+router.param('userId', isLogined, userById);
+router.param('permissionId', isLogined, permissionById);
 //---------------Export the module---------
 module.exports = router;

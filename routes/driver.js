@@ -5,22 +5,22 @@ const router = express.Router();
 const { create, driverById, read, remove, update,
     list, listPrices, listStores, removeDriverFromTown, updateTownsPrice,
     removeDriverFromAllTown } = require('../controllers/driver');
-const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const isLogined = require('../middleware/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-router.post('/driver/create', create);
-router.get('/driver/:driverId', read);
-router.put('/driver/update', update);
-router.put('/driver/update/price', updateTownsPrice);
-router.put('/driver/removeDriverTownn', removeDriverFromTown);
-router.put('/driver/removeDriverAllTowns', removeDriverFromAllTown);
-router.delete('/driver/delete', remove);
+router.post('/driver/create', isLogined, create);
+router.get('/driver/:driverId', isLogined, read);
+router.put('/driver/update', isLogined, update);
+router.put('/driver/update/price', isLogined, updateTownsPrice);
+router.put('/driver/removeDriverTownn', isLogined, removeDriverFromTown);
+router.put('/driver/removeDriverAllTowns', isLogined, removeDriverFromAllTown);
+router.delete('/driver/delete', isLogined, remove);
 //-------------list------------------------
-router.get('/drivers/', list);
-router.get('/drivers/prices', listPrices);
-router.get('/drivers/towns', listStores);
+router.get('/drivers/', isLogined, list);
+router.get('/drivers/prices', isLogined, listPrices);
+router.get('/drivers/towns', isLogined, listStores);
 //-------------params----------------------
-router.param('/userId', userById);
-router.param('/driverId', driverById);
+router.param('/userId', isLogined, userById);
+router.param('/driverId', isLogined, driverById);
 //---------------Export the module---------
 module.exports = router;

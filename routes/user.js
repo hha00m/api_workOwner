@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const isLogined = require('../middleware/auth');
 
 const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 
@@ -13,7 +14,7 @@ router.get("/secret/:userId", requireSignin, isAuth, isAdmin, (req, res) => {
 
 router.get("/user/:userId", requireSignin, isAuth, read);
 router.put("/user/:userId", requireSignin, isAuth, update);
-router.get("/currentUser", currentUser);
+router.get("/me", isLogined, currentUser);
 
 router.param("userId", userById);
 

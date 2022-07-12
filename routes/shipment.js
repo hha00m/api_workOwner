@@ -6,26 +6,26 @@ const { create, shipmentById, read, remove, update, list, listForAccounting,
     updateInvoice, ShipmentByClick, listForAccounting_branch, listForAccounting_driver,
     ShipmentByClick_branch, ShipmentByClick_driver, updateInvoice_branch,
     updateInvoice_driver } = require('../controllers/shipment');
-const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const isLogined = require('../middleware/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-router.post('/shipment/create', create);
-router.get('/shipment/:shipmentId', read);
-router.put('/shipment/update', update);
-router.put('/shipment/addInvoice', updateInvoice);
-router.put('/shipment/addInvoice/driver', updateInvoice_driver);
-router.put('/shipment/addInvoice/branch', updateInvoice_branch);
-router.delete('/shipment/delete', remove);
+router.post('/shipment/create', isLogined, create);
+router.get('/shipment/:shipmentId', isLogined, read);
+router.put('/shipment/update', isLogined, update);
+router.put('/shipment/addInvoice', isLogined, updateInvoice);
+router.put('/shipment/addInvoice/driver', isLogined, updateInvoice_driver);
+router.put('/shipment/addInvoice/branch', isLogined, updateInvoice_branch);
+router.delete('/shipment/delete', isLogined, remove);
 //-------------list------------------------
-router.get('/shipments', list);
-router.get('/shipments/accounting', listForAccounting);
-router.get('/shipments/accounting/branch', listForAccounting_branch);
-router.get('/shipments/accounting/driver', listForAccounting_driver);
-router.get('/shipments/ShipmentByClick', ShipmentByClick);
-router.get('/shipments/ShipmentByClick/driver', ShipmentByClick_driver);
-router.get('/shipments/ShipmentByClick/branch', ShipmentByClick_branch);
+router.get('/shipments', isLogined, list);
+router.get('/shipments/accounting', isLogined, listForAccounting);
+router.get('/shipments/accounting/branch', isLogined, listForAccounting_branch);
+router.get('/shipments/accounting/driver', isLogined, listForAccounting_driver);
+router.get('/shipments/ShipmentByClick', isLogined, ShipmentByClick);
+router.get('/shipments/ShipmentByClick/driver', isLogined, ShipmentByClick_driver);
+router.get('/shipments/ShipmentByClick/branch', isLogined, ShipmentByClick_branch);
 //-------------params----------------------
-router.param('/userId', userById);
-router.param('/shipmentId', shipmentById);
+router.param('/userId', isLogined, userById);
+router.param('/shipmentId', isLogined, shipmentById);
 //---------------Export the module---------
 module.exports = router;

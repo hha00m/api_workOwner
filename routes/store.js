@@ -3,17 +3,17 @@ const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
 const { create, storeById, read, remove, update, list } = require('../controllers/store');
-const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const isLogined = require('../middleware/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-router.post('/store/create', create);
-router.get('/store/:storeId', read);
-router.put('/store/update', update);
-router.delete('/store/delete', remove);
+router.post('/store/create', isLogined, create);
+router.get('/store/:storeId', isLogined, read);
+router.put('/store/update', isLogined, update);
+router.delete('/store/delete', isLogined, remove);
 //-------------list------------------------
-router.get('/stores/', list);
+router.get('/stores/', isLogined, list);
 //-------------params----------------------
-router.param('/userId', userById);
-router.param('/storeId', storeById);
+router.param('/userId', isLogined, userById);
+router.param('/storeId', isLogined, storeById);
 //---------------Export the module---------
 module.exports = router;

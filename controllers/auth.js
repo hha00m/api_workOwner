@@ -19,36 +19,28 @@ exports.signup = (req, res) => {
     });
   });
 };
-
 exports.signin = (req, res) => {
-  // find the user based on email
   const { username, password, type } = req.body;
-  User.findOne({ username }, (err, user) => {
+  User.findOne({ username }, async (err, user) => {
     if (err || !user) {
       return res.status(400).json({
-        error: 'User with that username does not exist. Please signup',
+        error: 'اسم المستخدم او كلمة المرور غير صحيحة.',
+        status: "error"
       });
     }
-    // if user is found make sure the username and password match
-    // create authenticate method in user model
     if (!user.authenticate(password)) {
       return res.status(401).json({
-        error: 'Error',
+        error: 'خطأ في اسم المستخدم او كلمة المرور',
+        status: "error"
       });
     }
-    // generate a signed token with user id and secret
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-    // persist the token as 't' in cookie with expiry date
-    res.cookie('t', token, { expire: new Date() + 9999 });
-    // return response with user and token to frontend client
-    //const { _id, name, email, mobile, role,userName } = user;
-    const { _id } = user;
-    return res.json({
+
+    const token = user.generateAuthToken();
+
+    return res.header('x-auth-token', token).send({
       status: 'ok',
       type,
-      _id,
-      token,
-      currentAuthority: 'admin',
+      token
     });
   });
 };
@@ -90,7 +82,6 @@ exports.signinusername = (req, res) => {
     // });
   });
 };
-
 exports.signinMobile = (req, res) => {
   // find the user based on mobile number
   const { mobile, password, type } = req.body;
@@ -122,17 +113,14 @@ exports.signinMobile = (req, res) => {
     });
   });
 };
-
 exports.signout = (req, res) => {
   res.clearCookie('t');
-  res.json({ message: 'Signout success' });
+  res.json({ message: 'Signout success', status: "ok" });
 };
-
 exports.requireSignin = expressJwt({
   secret: process.env.JWT_SECRET,
   userProperty: 'auth',
 });
-
 exports.isAuth = (req, res, next) => {
   let user = req.profile && req.auth && req.profile._id == req.auth._id;
   if (!user) {
@@ -142,7 +130,6 @@ exports.isAuth = (req, res, next) => {
   }
   next();
 };
-
 exports.isAdmin = (req, res, next) => {
   if (req.profile.role === 0) {
     return res.status(403).json({

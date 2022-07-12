@@ -3,19 +3,19 @@ const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
 const { create, townById, read, remove, update, list, townsByGovernment, townsNotAlocated } = require('../controllers/town');
-const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const isLogined = require('../middleware/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-router.post('/town/create', create);
-router.get('/town/:townId', read);
-router.put('/town/update', update);
-router.delete('/town/delete', remove);
+router.post('/town/create', isLogined, create);
+router.get('/town/:townId', isLogined, read);
+router.put('/town/update', isLogined, update);
+router.delete('/town/delete', isLogined, remove);
 //-------------list------------------------
-router.get('/towns/', list);
-router.get('/towns/notAllocated', townsNotAlocated);
-router.get('/townsByGovernment', townsByGovernment);
+router.get('/towns/', isLogined, list);
+router.get('/towns/notAllocated', isLogined, townsNotAlocated);
+router.get('/townsByGovernment', isLogined, townsByGovernment);
 //-------------params----------------------
-router.param('/userId', userById);
-router.param('/townId', townById);
+router.param('/userId', isLogined, userById);
+router.param('/townId', isLogined, townById);
 //---------------Export the module---------
 module.exports = router;

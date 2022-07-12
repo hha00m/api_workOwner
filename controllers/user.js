@@ -18,10 +18,11 @@ exports.read = (req, res) => {
   return res.json(req.profile);
 };
 
-exports.currentUser = (req, res) => {
-  // console.log(req.user._id);
-  const data = {
-    name: 'Serati Ma',
+exports.currentUser = async (req, res) => {
+  const user = await User.findById(req?.user?._id).select('-password');
+  return res.send({ data: user });
+  data = {
+    name: 'Hayder',
     avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
     userid: '00000001',
     email: 'antdesign@alipay.com',
@@ -70,9 +71,7 @@ exports.currentUser = (req, res) => {
     address: 'babilon hilla',
     phone: '0752-268888888',
   }
-  res.json({ data: data });
 };
-
 exports.update = (req, res) => {
   User.findOneAndUpdate(
     { _id: req.profile._id },

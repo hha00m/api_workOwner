@@ -3,18 +3,18 @@ const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
 const { create, jobTitleById, read, remove, update, listJobTitles, listPages } = require('../controllers/jobTitle');
-const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const isLogined = require('../middleware/auth');
 const { userById } = require('../controllers/user');
 //-------------CRUD------------------------
-router.post('/jobTitle/create', create);
-router.get('/jobTitle/:jobTitleId', read);
-router.put('/jobTitle/update', update);
-router.delete('/jobTitle/delete', remove);
+router.post('/jobTitle/create', isLogined, create);
+router.get('/jobTitle/:jobTitleId', isLogined, read);
+router.put('/jobTitle/update', isLogined, update);
+router.delete('/jobTitle/delete', isLogined, remove);
 //-------------list------------------------
-router.get('/jobTitles/', listJobTitles);
-router.get('/jobTitles/pages', listPages);
+router.get('/jobTitles/', isLogined, listJobTitles);
+router.get('/jobTitles/pages', isLogined, listPages);
 //-------------params----------------------
-router.param('/userId', userById);
-router.param('/jobTitleId', jobTitleById);
+router.param('/userId', isLogined, userById);
+router.param('/jobTitleId', isLogined, jobTitleById);
 //---------------Export the module---------
 module.exports = router;
