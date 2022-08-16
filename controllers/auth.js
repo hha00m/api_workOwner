@@ -2,9 +2,18 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken'); // to generate signed token
 const expressJwt = require('express-jwt'); // for authorization check
 const { errorHandler } = require('../helpers/dbErrorHandler');
+const { postImageS3 } = require('./user');
 
-exports.signup = (req, res) => {
-  const user = new User(req.body);
+
+
+
+
+exports.signup = async (req, res) => {
+  let obj = req.body;
+  if (obj?.avatar?.length > 0) {
+    obj.avatar = obj?.avatar[0]
+  }
+  const user = new User(obj);
   user.save((err, user) => {
     if (err) {
       return res.status(400).json({

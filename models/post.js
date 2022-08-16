@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const JobTitle = require('./jobTitle');
-const Employee = require('./employee');
+const User = require('./user');
 const PostComment = require('./postCommnet');
 
 const postSchema = new mongoose.Schema(
@@ -35,13 +35,13 @@ const postSchema = new mongoose.Schema(
       default: false,
     },
     postGroup: JobTitle.schema,
-    employee: Employee.schema,
+    employee: User.schema,
     comments: [PostComment.schema],
     imgPath: {
       type: String,
       maxlength: 200,
     },
-    creater: Employee.schema,
+    creater: User.schema,
     like: {
       type: Number,
       default: 0,

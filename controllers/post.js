@@ -36,17 +36,17 @@ exports.update = (req, res) => {
 };
 exports.create = (req, res) => {
   const postNew = {
-    content: req.body.data.content,
-    shipment_no: req.body.data.shipment_no,
-    statment_no: req.body.data.statment_no,
-    mobile: req.body.data.mobile,
-    importance: req.body.data.importance,
-    open: req.body.data.open,
-    urgent: req.body.data.urgent,
-    postGroup: req.body.data.postGroup,
-    employee: req.body.data.employee,
-    imgPath: req.body.data.imgPath,
-    creater: req.body.currentUser
+    content: req.body?.data?.content,
+    shipment_no: req.body?.data?.shipment_no,
+    statment_no: req.body?.data?.statment_no,
+    mobile: req.body.data?.mobile,
+    importance: req.body?.data?.importance,
+    open: req.body?.data?.open,
+    urgent: req.body?.data?.urgent,
+    postGroup: req.body?.data?.postGroup,
+    employee: req.body?.data?.employee?.obj,
+    imgPath: req.body?.data?.imgPath,
+    creater: req.body?.currentUser
   }
   const post = new Post(postNew);
   post.save((err, data) => {

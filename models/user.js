@@ -1,17 +1,15 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const uuidv1 = require('uuid/v1');
-const Town = require('./town');
-const Government = require('./government');
 const jwt = require('jsonwebtoken');
 const process = require('process');
+
+
 
 const userSchema = new mongoose.Schema(
   {
     avatar: {
-      type: String,
-      trim: true,
-      maxlength: 255,
+      type: Object,
     },
     signature: {
       type: String,
@@ -23,9 +21,14 @@ const userSchema = new mongoose.Schema(
       trim: true,
       maxlength: 32,
     },
-    group: {
+    name: {
       type: String,
       trim: true,
+      maxlength: 32,
+    },
+    jobTitle: {
+      type: mongoose.Types.ObjectId,
+      ref: 'JobTitle',
     },
     // tags: [{ key: string, label: string }],
     notifyCount: {
@@ -36,6 +39,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    branch: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Branch'
+    },
     country: {
       type: String,
       trim: true,
@@ -45,9 +52,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    geographic: {
-      province: Government.schema,
-      city: Town.schema,
+    government: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Government',
+    },
+    town: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Town',
     },
     address: {
       type: String,
@@ -57,11 +68,7 @@ const userSchema = new mongoose.Schema(
     autoLogin: {
       type: Boolean,
     },
-    name: {
-      type: String,
-      trim: true,
-      maxlength: 32,
-    },
+
     email: {
       type: String,
       trim: true,
@@ -81,6 +88,10 @@ const userSchema = new mongoose.Schema(
     hashed_password: {
       type: String,
       required: true,
+    },
+    salary: {
+      type: Number,
+      default: 0
     },
     about: {
       type: String,
