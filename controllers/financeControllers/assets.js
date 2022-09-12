@@ -1,7 +1,7 @@
-const Government = require('../../models/financeModels/revenueStatus');
+const Government = require('../../models/financeModels/assets');
 const { errorHandler } = require('../../helpers/dbErrorHandler');
 
-exports.revenueStatusById = (req, res, next, id) => {
+exports.assetsById = (req, res, next, id) => {
   Government.findById(id).exec((err, government) => {
     if (err || !government) {
       return res.status(400).json({

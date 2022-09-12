@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const expensesStatus = require("./expensesStatus");
 
-const ownersEquitySchema = new mongoose.Schema(
+const expensesSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -8,6 +9,7 @@ const ownersEquitySchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
+        status: expensesStatus.schema,
         balance: {
             type: Number,
             default: 0,
@@ -20,4 +22,4 @@ const ownersEquitySchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-module.exports = mongoose.model(" OwnersEquity", ownersEquitySchema);
+module.exports = mongoose.model("Expenses", expensesSchema);

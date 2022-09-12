@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const revenueStatus = require("./revenueStatus");
 
-const ownersEquitySchema = new mongoose.Schema(
+const revenueSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -8,6 +9,7 @@ const ownersEquitySchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
+        status: revenueStatus.schema,
         balance: {
             type: Number,
             default: 0,
@@ -20,4 +22,4 @@ const ownersEquitySchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-module.exports = mongoose.model(" OwnersEquity", ownersEquitySchema);
+module.exports = mongoose.model("Revenue", revenueSchema);
