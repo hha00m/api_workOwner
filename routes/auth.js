@@ -12,7 +12,7 @@ const {
 } = require("../controllers/auth");
 const { userSignupValidator } = require("../validator");
 
-router.post("/register", userSignupValidator, signup);
+router.post("/register", signup);
 router.post("/login", signin);
 // router.post("/loginMobile", signinMobile);
 // router.post("/login/account", signinusername);

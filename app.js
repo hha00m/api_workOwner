@@ -48,6 +48,14 @@ const attCRoutes = require('./routes/2_AttributeConfiguration');
 const config = require('./routes/websiteConfig');
 const monitor = require('./routes/monitor');
 
+//finance
+const assetsStatusRoutes = require('./routes/financeRoutes/assetsStatus');
+const expensesStatusRoutes = require('./routes/financeRoutes/expensesStatus');
+const liabilitiesStatusRoutes = require('./routes/financeRoutes/liabilitiesStatus');
+const revenueStatusRoutes = require('./routes/financeRoutes/revenueStatus');
+const ownersEquityRoutes = require('./routes/financeRoutes/ownersEquity');
+
+
 // app
 const app = express();
 
@@ -112,6 +120,15 @@ app.use('/api', attNRoutes);
 app.use('/api', config);
 app.use('/api', postRoutes);
 app.use('/api', monitor);
+
+//finiance
+app.use('/api', assetsStatusRoutes);
+app.use('/api', expensesStatusRoutes);
+app.use('/api', liabilitiesStatusRoutes);
+app.use('/api', ownersEquityRoutes);
+app.use('/api', revenueStatusRoutes);
+
+
 app.use('/pdf', express.static(__dirname + '/pathToPDF'));
 const port = process.env.PORT || 8050;
 
