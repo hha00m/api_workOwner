@@ -32,7 +32,7 @@ exports.read = (req, res) => {
 exports.update = (req, res) => {
 
   Government.update({ _id: req.body.id }, {
-    $set: { name: req.body.name, note: req.body.note },
+    $set: { name: req.body.name, note: req.body.note, current: req.body.current },
   }).then((result) => { res.json(result) })
     .catch((err) => {
       return res.status(400).json({ error: errorHandler(err) })

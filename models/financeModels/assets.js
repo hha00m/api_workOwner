@@ -9,7 +9,7 @@ const assetsSchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
-        status: assetsStatus.schema,
+        type: assetsStatus.schema,
         balance: {
             type: Number,
             default: 0,

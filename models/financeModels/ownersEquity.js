@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ownerEquityType = require("./ownerEquityType");
 
 const ownersEquitySchema = new mongoose.Schema(
     {
@@ -8,6 +9,8 @@ const ownersEquitySchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
+        type: ownerEquityType.schema,
+
         balance: {
             type: Number,
             default: 0,

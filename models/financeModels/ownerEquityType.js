@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const revenueStatusSchema = new mongoose.Schema(
+const ownerEquityTypeSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -15,9 +15,9 @@ const revenueStatusSchema = new mongoose.Schema(
         note: {
             type: String,
             trim: true,
-            maxlength: 255
+            maxlength: 64
         }
     },
     { timestamps: true }
 );
-module.exports = mongoose.model("RevenueStatus", revenueStatusSchema);
+module.exports = mongoose.model("OwnerEquityType", ownerEquityTypeSchema);

@@ -8,6 +8,10 @@ const assetsStatusSchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
+        current: {
+            type: Boolean,
+            default: false
+        },
         note: {
             type: String,
             trim: true,

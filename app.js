@@ -53,6 +53,7 @@ const assetsStatusRoutes = require('./routes/financeRoutes/assetsStatus');
 const expensesStatusRoutes = require('./routes/financeRoutes/expensesStatus');
 const liabilitiesStatusRoutes = require('./routes/financeRoutes/liabilitiesStatus');
 const revenueStatusRoutes = require('./routes/financeRoutes/revenueStatus');
+const ownersEquityTypeRoutes = require('./routes/financeRoutes/ownersEquityType');
 const ownersEquityRoutes = require('./routes/financeRoutes/ownersEquity');
 const assetsRoutes = require('./routes/financeRoutes/assets');
 const expensesRoutes = require('./routes/financeRoutes/expenses');
@@ -134,6 +135,7 @@ app.use('/api', assetsRoutes);
 app.use('/api', expensesRoutes);
 app.use('/api', liabilitiesRoutes);
 app.use('/api', revenueRoutes);
+app.use('/api', ownersEquityTypeRoutes);
 
 
 app.use('/pdf', express.static(__dirname + '/pathToPDF'));

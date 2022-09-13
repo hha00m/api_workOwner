@@ -14,7 +14,9 @@ exports.assetsById = (req, res, next, id) => {
 };
 
 exports.create = (req, res) => {
-  const government = new Government(req.body);
+  const s = { name: req.body.name, note: req.body.note, type: req.body.typeObject }
+
+  const government = new Government(s);
   government.save((err, data) => {
     if (err) {
       return res.status(400).json({
@@ -40,7 +42,7 @@ exports.update = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  Government.deleteOne({ _id: req.body.key[0] }).then((result) => {
+  Government.deleteOne({ _id: req.body.keys[0] }).then((result) => {
     res.json({
       message: 'type deleted successfully',
     });

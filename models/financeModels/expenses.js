@@ -9,7 +9,7 @@ const expensesSchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
-        status: expensesStatus.schema,
+        type: expensesStatus.schema,
         balance: {
             type: Number,
             default: 0,

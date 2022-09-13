@@ -9,7 +9,7 @@ const liabilitiesSchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
-        status: liabilitiesStatus.schema,
+        type: liabilitiesStatus.schema,
         balance: {
             type: Number,
             default: 0,
