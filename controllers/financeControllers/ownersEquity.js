@@ -49,7 +49,16 @@ exports.update = (req, res) => {
       return res.status(400).json({ error: errorHandler(err) })
     })
 };
+exports.increaseBalanceOwnersEquity = (id, value) => {
 
+  Government.update({ _id: id }, {
+    $inc: {
+      balance: value,
+    },
+  }).catch((err) => {
+    console.log(err)
+  })
+};
 exports.remove = (req, res) => {
   Government.deleteOne({ _id: req.body.keys[0] }).then((result) => {
     res.json({

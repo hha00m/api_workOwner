@@ -1,6 +1,14 @@
 const Government = require('../../models/financeModels/journalEntry');
 const { errorHandler } = require('../../helpers/dbErrorHandler');
-const Entry = require('../../models/financeModels/entry')
+const Entry = require('../../models/financeModels/entry');
+const { increaseBalanceExpenses } = require('./expenses');
+const { increaseBalanceAssets } = require('./assets');
+const { increaseBalanceLLiabillities } = require('./liabilities');
+const { increaseBalanceOwnersEquity } = require('./ownersEquity');
+const { increaseBalanceRevennue } = require('./revenue');
+
+
+
 exports.journalEntryById = (req, res, next, id) => {
   Government.findById(id).exec((err, government) => {
     if (err || !government) {
@@ -13,7 +21,37 @@ exports.journalEntryById = (req, res, next, id) => {
   });
 };
 
-const createEntry = (rank, d, res) => {
+const transaction = (obj, isPayable) => {
+  if (!isPayable) {
+    obj?.assets?._id ?
+      increaseBalanceAssets(obj?.assets?._id, obj?.money) :
+      obj?.expenses?._id ?
+        increaseBalanceExpenses(obj?.expenses?._id, obj?.money) :
+        obj?.liabilities?._id ?
+          increaseBalanceLLiabillities(obj?.liabilities?._id, obj?.money) :
+          obj?.ownersEquity?._id ?
+            increaseBalanceOwnersEquity(obj?.ownersEquity?._id, obj?.money) :
+            increaseBalanceRevennue(obj?.revennue?._id, obj?.money)
+
+  }
+  else {
+    obj?.assets?._id ?
+      increaseBalanceAssets(obj?.assets?._id, -1 * obj?.money) :
+      obj?.expenses?._id ?
+        increaseBalanceExpenses(obj?.expenses?._id, -1 * obj?.money) :
+        obj?.liabilities?._id ?
+          increaseBalanceLLiabillities(obj?.liabilities?._id, -1 * obj?.money) :
+          obj?.ownersEquity?._id ?
+            increaseBalanceOwnersEquity(obj?.ownersEquity?._id, -1 * obj?.money) :
+            increaseBalanceRevennue(obj?.revennue?._id, -1 * obj?.money)
+
+  }
+
+
+};
+
+
+const createEntry = (rank, d) => {
   const py = d;
   py["entryNumber"] = rank;
   const entry = new Entry(py)
@@ -23,7 +61,7 @@ const createEntry = (rank, d, res) => {
         error: errorHandler(err),
       });
     }
-    console.log(data);
+    py.isPayable ? transaction(py, py.isPayable) : transaction(py, py.isPayable)
   });
   return entry;
 }
@@ -73,11 +111,14 @@ exports.update = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  Government.deleteOne({ entryNumber: req.body.keys[0] }).then((result) => {
-    Entry.deleteMany({ entryNumber: req.body.keys[0] }).then((result) => {
+  Government.deleteOne({ entryNumber: req.body.keys[0].ids }).then((result) => {
+    Entry.deleteMany({ entryNumber: req.body.keys[0].ids }).then((result) => {
       res.json({
         message: 'type deleted successfully',
       });
+      req.body.keys[0].payable.isPayable ?
+        transaction(req.body.keys[0].payable, !req.body.keys[0].payable.isPayable) :
+        transaction(req.body.keys[0].receivable, !req.body.keys[0].receivable.isPayable)
     }).catch((err) => {
       return res.status(400).json({
         error: errorHandler(err),
