@@ -14,6 +14,11 @@ const liabilitiesSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        parent: {
+            type: String,
+            trim: true,
+            maxlength: 55
+        },
         note: {
             type: String,
             trim: true,

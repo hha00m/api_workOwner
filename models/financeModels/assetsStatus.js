@@ -12,6 +12,11 @@ const assetsStatusSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
+        parent: {
+            type: String,
+            trim: true,
+            maxlength: 55
+        },
         note: {
             type: String,
             trim: true,

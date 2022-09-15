@@ -16,7 +16,12 @@ const expensesStatusSchema = new mongoose.Schema(
             type: String,
             trim: true,
             maxlength: 64
-        }
+        },
+        parent: {
+            type: String,
+            trim: true,
+            maxlength: 55
+        },
     },
     { timestamps: true }
 );

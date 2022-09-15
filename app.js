@@ -59,6 +59,7 @@ const assetsRoutes = require('./routes/financeRoutes/assets');
 const expensesRoutes = require('./routes/financeRoutes/expenses');
 const liabilitiesRoutes = require('./routes/financeRoutes/liabilities');
 const revenueRoutes = require('./routes/financeRoutes/revenue');
+const journalEntryRoutes = require('./routes/financeRoutes/journalEntry');
 
 // app
 const app = express();
@@ -136,7 +137,7 @@ app.use('/api', expensesRoutes);
 app.use('/api', liabilitiesRoutes);
 app.use('/api', revenueRoutes);
 app.use('/api', ownersEquityTypeRoutes);
-
+app.use('/api', journalEntryRoutes);
 
 app.use('/pdf', express.static(__dirname + '/pathToPDF'));
 const port = process.env.PORT || 8050;

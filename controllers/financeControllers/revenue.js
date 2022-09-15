@@ -14,7 +14,11 @@ exports.revenueById = (req, res, next, id) => {
 };
 
 exports.create = (req, res) => {
-  const s = { name: req.body.name, note: req.body.note, type: req.body.typeObject }
+  const s = {
+    name: req.body.name,
+    parent: req.body.typeObject?.parent,
+    note: req.body.note, type: req.body.typeObject
+  }
 
   const government = new Government(s);
   government.save((err, data) => {
@@ -36,7 +40,9 @@ exports.update = (req, res) => {
   Government.update({ _id: req.body.id }, {
     $set: {
       name: req.body.name, note: req.body.note,
-      balance: req.body.balance, type: req.body.typeObject
+      balance: req.body.balance,
+      parent: req.body.typeObject?.parent,
+      type: req.body.typeObject
     },
   }).then((result) => { res.json(result) })
     .catch((err) => {

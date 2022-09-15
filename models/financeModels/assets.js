@@ -9,6 +9,11 @@ const assetsSchema = new mongoose.Schema(
             required: true,
             maxlength: 32
         },
+        parent: {
+            type: String,
+            trim: true,
+            maxlength: 55
+        },
         type: assetsStatus.schema,
         balance: {
             type: Number,

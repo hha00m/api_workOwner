@@ -10,7 +10,11 @@ const ownersEquitySchema = new mongoose.Schema(
             maxlength: 32
         },
         type: ownerEquityType.schema,
-
+        parent: {
+            type: String,
+            trim: true,
+            maxlength: 55
+        },
         balance: {
             type: Number,
             default: 0,
