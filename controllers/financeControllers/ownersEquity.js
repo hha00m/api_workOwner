@@ -1,5 +1,7 @@
 const Government = require('../../models/financeModels/ownersEquity');
 const { errorHandler } = require('../../helpers/dbErrorHandler');
+const Entry = require('../../models/financeModels/entry');
+const JournalEntry = require('../../models/financeModels/journalEntry');
 
 exports.ownersEquityById = (req, res, next, id) => {
   Government.findById(id).exec((err, government) => {
@@ -12,13 +14,12 @@ exports.ownersEquityById = (req, res, next, id) => {
     next();
   });
 };
-
 exports.create = (req, res) => {
   const s = {
-    name: req.body.name,
-    note: req.body.note,
-    parent: req.body.typeObject?.parent,
-    type: req.body.typeObject
+    name: req.body?.name,
+    note: req.body?.note,
+    parent: req.body?.typeObject?.parent,
+    type: req.body?.typeObject
   }
   const government = new Government(s);
   government.save((err, data) => {
@@ -30,11 +31,9 @@ exports.create = (req, res) => {
     res.json({ data });
   });
 };
-
 exports.read = (req, res) => {
   return res.json(req.government);
 };
-
 exports.update = (req, res) => {
 
   Government.update({ _id: req.body.id }, {
@@ -42,7 +41,7 @@ exports.update = (req, res) => {
       name: req.body.name, note: req.body.note,
       balance: req.body.balance,
       parent: req.body.typeObject?.parent,
-      type: req.body.typeObject
+      type: req.body?.typeObject
     },
   }).then((result) => { res.json(result) })
     .catch((err) => {
@@ -50,14 +49,59 @@ exports.update = (req, res) => {
     })
 };
 exports.increaseBalanceOwnersEquity = (id, value) => {
+  try {
 
-  Government.update({ _id: id }, {
-    $inc: {
-      balance: value,
-    },
-  }).catch((err) => {
-    console.log(err)
-  })
+    Government.update({ _id: id }, {
+      $inc: {
+        balance: value,
+      },
+    }).catch((err) => {
+      console.log(err)
+    })
+  } catch (e) {
+    console.log({
+      message: 'type deleted unsuccessfully',
+    })
+  };
+};
+const createEntry = (s, res) => {
+  try {
+    const entry = new Entry(s)
+    entry.save((err, data) => {
+      if (err) {
+        console.log({
+          error: errorHandler(err),
+        });
+      }
+      Government.update({ _id: s.ownersEquity._id }, {
+        $inc: {
+          balance: s.money,
+        },
+      }).catch((err) => {
+        console.log(err)
+      }).then((ok) =>
+        res.json({
+          message: 'type deleted successfully',
+        })
+      )
+    });
+  } catch (e) {
+    res.json({
+      message: 'type deleted unsuccessfully',
+    });
+  }
+}
+exports.updateMoney = async (req, res) => {
+  const number = await Entry.find({}).sort({ _id: -1 }).limit(1)
+
+  createEntry({
+    entryNumber: number[0] ?
+      number[0]?.entryNumber > 550000 ?
+        number[0]?.entryNumber + 1 : 550000 : 550000,
+    isPayable: false,
+    money: req.body?.balance,
+    ownersEquity: req.body?.typeObject
+  }, res)
 };
 exports.remove = (req, res) => {
   Government.deleteOne({ _id: req.body.keys[0] }).then((result) => {
@@ -70,7 +114,6 @@ exports.remove = (req, res) => {
     });
   })
 };
-
 exports.list = (req, res) => {
   const pageSize = 20; //page size which is limeit
   const current = 0; // return currnet page else 0
