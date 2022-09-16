@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Transiction = require("./transiction");
+const { ObjectId } = mongoose.Schema;
 
 const ClientStatementSchema = new mongoose.Schema(
     {
