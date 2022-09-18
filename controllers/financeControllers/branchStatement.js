@@ -1,7 +1,7 @@
-const ClientStatement = require('../../models/financeModels/clientStatement');
+const ClientStatement = require('../../models/financeModels/branchStatement');
 const { errorHandler } = require('../../helpers/dbErrorHandler');
 
-exports.clientStatementById = (req, res, next, id) => {
+exports.BranchStatementById = (req, res, next, id) => {
     ClientStatement.findById(id).exec((err, clientStatement) => {
         if (err || !clientStatement) {
             return res.status(400).json({
@@ -74,8 +74,7 @@ exports.list = (req, res) => {
 
     ClientStatement
         .find()
-        .populate('client', 'name _id')
-        .populate('store', 'name _id')
+        .populate('branch', 'name _id')
         // .skip(pageSize * current)
         // .limit(pageSize)
         .sort({ name: 1 })
@@ -90,7 +89,7 @@ exports.list = (req, res) => {
         }).catch((err) => {
             return res.status(400).json({
                 success: false,
-                error: 'clientStatement not found',
+                error: 'driver Statement not found',
             })
         })
 

@@ -61,6 +61,8 @@ const liabilitiesRoutes = require('./routes/financeRoutes/liabilities');
 const revenueRoutes = require('./routes/financeRoutes/revenue');
 const journalEntryRoutes = require('./routes/financeRoutes/journalEntry');
 const clientStatementRoutes = require('./routes/financeRoutes/clientStatement');
+const driverStatementRoutes = require('./routes/financeRoutes/driverStatement');
+const branchStatementRoutes = require('./routes/financeRoutes/branchStatement');
 
 // app
 const app = express();
@@ -140,6 +142,8 @@ app.use('/api', revenueRoutes);
 app.use('/api', ownersEquityTypeRoutes);
 app.use('/api', journalEntryRoutes);
 app.use('/api', clientStatementRoutes);
+app.use('/api', driverStatementRoutes);
+app.use('/api', branchStatementRoutes);
 
 app.use('/pdf', express.static(__dirname + '/pathToPDF'));
 const port = process.env.PORT || 8050;

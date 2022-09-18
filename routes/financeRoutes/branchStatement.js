@@ -2,18 +2,18 @@
 const express = require('express');
 const router = express.Router();
 //-----------------Imports-----------------
-const { create, clientStatementById, read, remove, update, list } = require('../../controllers/financeControllers/clientStatement');
+const { create, branchStatementById, read, remove, update, list } = require('../../controllers/financeControllers/branchStatement');
 const { userById } = require('../../controllers/user');
 const isLogined = require('../../middleware/auth');
 //-------------CRUD------------------------
-router.post('/clientStatement/create', isLogined, create);
-router.get('/clientStatement/:clientStatementId', isLogined, read);
-router.put('/clientStatement/update', isLogined, update);
-router.delete('/clientStatement/delete', isLogined, remove);
+router.post('/branchStatement/create', isLogined, create);
+router.get('/branchStatement/:branchStatementId', isLogined, read);
+router.put('/branchStatement/update', isLogined, update);
+router.delete('/branchStatement/delete', isLogined, remove);
 //-------------list------------------------
-router.get('/clientStatements/', isLogined, list);
+router.get('/branchStatements/', isLogined, list);
 //-------------params----------------------
 router.param('/userId', isLogined, userById);
-router.param('/clientStatementId', isLogined, clientStatementById);
+router.param('/branchStatementId', isLogined, branchStatementById);
 //---------------Export the module---------
 module.exports = router;

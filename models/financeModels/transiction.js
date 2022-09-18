@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const { ObjectId } = mongoose.Schema;
 
 const transictionSchema = new mongoose.Schema(
     {
@@ -13,6 +13,14 @@ const transictionSchema = new mongoose.Schema(
         money: {
             type: Number,
             default: 0,
+        },
+        liabilities: {
+            type: ObjectId,
+            ref: 'liabilities',
+        },
+        asset: {
+            type: ObjectId,
+            ref: 'asset',
         },
         // createdBy: employee.schema,
         docPath: {

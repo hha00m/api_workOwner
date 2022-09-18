@@ -2,15 +2,11 @@ const mongoose = require("mongoose");
 const Transiction = require("./transiction");
 const { ObjectId } = mongoose.Schema;
 
-const ClientStatementSchema = new mongoose.Schema(
+const branchStatementSchema = new mongoose.Schema(
     {
-        client: {
+        branch: {
             type: ObjectId,
-            ref: 'Client',
-        },
-        store: {
-            type: ObjectId,
-            ref: 'Store',
+            ref: 'Branch',
         },
         note: {
             type: String,
@@ -25,4 +21,4 @@ const ClientStatementSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-module.exports = mongoose.model("ClientStatement", ClientStatementSchema);
+module.exports = mongoose.model("BranchStatement", branchStatementSchema);

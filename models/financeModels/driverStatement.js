@@ -2,15 +2,11 @@ const mongoose = require("mongoose");
 const Transiction = require("./transiction");
 const { ObjectId } = mongoose.Schema;
 
-const ClientStatementSchema = new mongoose.Schema(
+const DriverStatementSchema = new mongoose.Schema(
     {
-        client: {
+        driver: {
             type: ObjectId,
-            ref: 'Client',
-        },
-        store: {
-            type: ObjectId,
-            ref: 'Store',
+            ref: 'Driver',
         },
         note: {
             type: String,
@@ -25,4 +21,4 @@ const ClientStatementSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-module.exports = mongoose.model("ClientStatement", ClientStatementSchema);
+module.exports = mongoose.model("DriverStatement", DriverStatementSchema);

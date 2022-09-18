@@ -10,17 +10,13 @@ const entrySchema = new mongoose.Schema(
         entryNumber: {
             type: Number,
         },
-
         isPayable: {
             type: Boolean,
         },
-
         money: {
             type: Number,
             default: 0,
-
         },
-
         assets: assets.schema,
         expenses: expenses.schema,
         liabilities: liabilities.schema,
