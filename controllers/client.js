@@ -3,6 +3,7 @@ const { errorHandler } = require('../helpers/dbErrorHandler');
 const mongoose = require('mongoose');
 
 const Store = require('../models/store');
+const ClientStatement = require('../models/financeModels/clientStatement');
 exports.clientById = (id) => {
   try {
     Client.find({ _id: id }).then((result) => {
@@ -49,6 +50,18 @@ exports.create = (req, res) => {
         error: errorHandler(err),
       });
     }
+    const ss = {
+      client: data._id,
+      balance: 0
+    }
+    const clientStatement = new ClientStatement(ss);
+    clientStatement.save((err, data2) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler(err),
+        });
+      }
+    });
     res.json({
       data, success: true,
     });

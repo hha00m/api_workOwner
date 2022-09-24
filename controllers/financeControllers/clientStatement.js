@@ -12,7 +12,6 @@ exports.clientStatementById = (req, res, next, id) => {
         next();
     });
 };
-
 exports.create = (req, res) => {
     const clientStatement = new ClientStatement(req.body);
     clientStatement.save((err, data) => {
@@ -24,13 +23,10 @@ exports.create = (req, res) => {
         res.json({ data });
     });
 };
-
 exports.read = (req, res) => {
     return res.json(req.clientStatement);
 };
-
 exports.update = (req, res) => {
-
     ClientStatement.update({ _id: req.body.id }, {
         $set: {
             note: req.body.note,
@@ -42,19 +38,17 @@ exports.update = (req, res) => {
             return res.status(400).json({ error: errorHandler(err) })
         })
 };
-exports.increaseBalanceAssets = (id, value) => {
+exports.increaseBalanceAssets = (req, res) => {
 
-    ClientStatement.update({ _id: id }, {
+    ClientStatement.update({ client: req.body.client }, {
         $inc: {
-            balance: value,
+            balance: req.body.balance,
         },
-    }).catch((err) => {
-        console.log(err)
-    })
+    }).then((result) => { res.json(result) })
+        .catch((err) => {
+            return res.status(400).json({ error: errorHandler(err) })
+        })
 };
-
-
-
 exports.remove = (req, res) => {
     ClientStatement.deleteOne({ _id: req.body.keys[0] }).then((result) => {
         res.json({
@@ -66,7 +60,6 @@ exports.remove = (req, res) => {
         });
     })
 };
-
 exports.list = (req, res) => {
     const pageSize = 20; //page size which is limeit
     const current = 0; // return currnet page else 0
@@ -75,7 +68,7 @@ exports.list = (req, res) => {
     ClientStatement
         .find()
         .populate('client', 'name _id')
-        .populate('store', 'name _id')
+        // .populate('store', 'name _id')
         // .skip(pageSize * current)
         // .limit(pageSize)
         .sort({ name: 1 })

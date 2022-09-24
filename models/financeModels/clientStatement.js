@@ -8,10 +8,7 @@ const ClientStatementSchema = new mongoose.Schema(
             type: ObjectId,
             ref: 'Client',
         },
-        store: {
-            type: ObjectId,
-            ref: 'Store',
-        },
+
         note: {
             type: String,
             trim: true,
